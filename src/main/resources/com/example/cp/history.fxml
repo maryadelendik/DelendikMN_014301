@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #ffffff;" stylesheets="@../../../static/style.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cp.FXcontrollers.HistoryController">
+   <children>
+      <TableView fx:id="table" prefHeight="716.0" prefWidth="1017.0">
+        <columns>
+            <TableColumn fx:id="user_column" prefWidth="193.0" text="Пользователь" />
+            <TableColumn fx:id="time_column" prefWidth="193.0" text="Время" />
+          <TableColumn fx:id="action_column" prefWidth="193.0" text="Действие" />
+          <TableColumn fx:id="old_value_column" prefWidth="215.5999755859375" text="Старое значение" />
+            <TableColumn fx:id="new_value_column" prefWidth="219.99996337890627" text="Новое значение" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>

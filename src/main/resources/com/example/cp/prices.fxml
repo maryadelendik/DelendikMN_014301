@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="206.0" prefWidth="400.0" style="-fx-background-color: fff;" stylesheets="@../../../static/style.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cp.FXcontrollers.PriceController">
+   <children>
+      <Label fx:id="supplier_label" layoutX="124.0" layoutY="15.0" prefHeight="26.0" prefWidth="227.0">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Button fx:id="set_price" layoutX="14.0" layoutY="138.0" mnemonicParsing="false" onAction="#SetPriceOnAction" prefHeight="34.0" prefWidth="164.0" style="-fx-background-color: #001933;" text="Установить" textFill="WHITE">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <ComboBox fx:id="materials_cb" layoutX="14.0" layoutY="57.0" onAction="#SearchMaterialsButtonOnAction" prefHeight="34.0" prefWidth="164.0" promptText="Материал" />
+      <TextField fx:id="price_field" layoutX="14.0" layoutY="98.0" prefHeight="34.0" prefWidth="164.0" promptText="Цена" />
+      <Label fx:id="supplier_label1" layoutX="14.0" layoutY="15.0" prefHeight="26.0" prefWidth="109.0" text="Поставщик:">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

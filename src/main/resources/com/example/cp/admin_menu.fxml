@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: fff;" stylesheets="@../../../static/style.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cp.FXcontrollers.AdminMenuController">
+   <children>
+      <TabPane fx:id="tab_pane" prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: 808080;" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab fx:id="home">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: fff;">
+                     <children>
+                        <Button fx:id="exit_button" layoutX="370.0" layoutY="600.0" mnemonicParsing="false" onAction="#ExitButtonOnAction" prefHeight="40.0" prefWidth="260.0" text="Выход из системы" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Button>
+                        <Label fx:id="welcome_label" layoutX="14.0" layoutY="74.0" text="Меню для пользователя:">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="login_label" layoutX="293.0" layoutY="74.0" style="-fx-font-size: 24;">
+                           <font>
+                              <Font name="System Bold" size="24.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="change_password" layoutX="370.0" layoutY="552.0" mnemonicParsing="false" onAction="#ChangePasswordOnAction" prefHeight="40.0" prefWidth="260.0" text="Сменить пароль" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab fx:id="users" text="Пользователи">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: fff;">
+                     <children>
+                        <TextField fx:id="user_login" layoutX="51.0" layoutY="58.0" prefHeight="33.0" prefWidth="223.0" promptText="Логин">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </TextField>
+                        <Button fx:id="create_user" layoutX="51.0" layoutY="117.0" mnemonicParsing="false" onAction="#CreateUserButtonOnAction" prefHeight="40.0" prefWidth="223.0" text="Создать" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="delete_user" layoutX="51.0" layoutY="165.0" mnemonicParsing="false" onAction="#DeleteUserButtonOnAction" prefHeight="40.0" prefWidth="223.0" text="Удалить" textFill="WHITE">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Button>
+                        <Rectangle fx:id="rectangle_create_user" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="659.0" layoutX="322.0" layoutY="6.0" stroke="GREY" strokeType="INSIDE" visible="false" width="632.0" />
+                        <PasswordField fx:id="first_password" layoutX="526.0" layoutY="230.0" prefHeight="40.0" prefWidth="222.0" promptText="Начальный пароль" visible="false">
+                           <font>
+                              <Font size="16.0" />
+                           </font></PasswordField>
+                        <Label fx:id="create_login_label" layoutX="526.0" layoutY="188.0" visible="false">
+                           <font>
+                              <Font name="System Bold" size="24.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="roles" layoutX="526.0" layoutY="305.0" prefHeight="40.0" prefWidth="222.0" promptText="Роль" style="-fx-font-size: 16;" visible="false" />
+                        <Label fx:id="choose_role" layoutX="529.0" layoutY="279.0" nodeOrientation="LEFT_TO_RIGHT" text="Выберите роль для пользователя:" visible="false" />
+                        <Button fx:id="save_user" layoutX="526.0" layoutY="361.0" mnemonicParsing="false" onAction="#SaveUserButtonOnAction" prefHeight="40.0" prefWidth="223.0" text="Сохранить" textFill="WHITE" visible="false">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Button>
+                        <Label fx:id="label2" layoutX="526.0" layoutY="165.0" nodeOrientation="LEFT_TO_RIGHT" text="Логин пользователя:" visible="false" />
+                        <Label fx:id="label1" layoutX="338.0" layoutY="14.0" nodeOrientation="LEFT_TO_RIGHT" text="Форма добавления нового пользователя" visible="false" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab fx:id="suppliers_tab" text="Поставщики">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #fff;">
+                     <children>
+                        <TextField fx:id="search_field" layoutX="23.0" layoutY="24.0" promptText="Поиск">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </TextField>
+                        <TableView fx:id="table_suppliers" editable="true" layoutX="23.0" layoutY="62.0" onMouseClicked="#SuppTableMouseClicked" prefHeight="530.0" prefWidth="683.0">
+                          <columns>
+                            <TableColumn fx:id="name_col" prefWidth="160.0" text="Название" />
+                            <TableColumn fx:id="phone_col" prefWidth="160.0" text="Телефон" />
+                              <TableColumn fx:id="email_col" prefWidth="160.0" text="Email" />
+                              <TableColumn fx:id="address_col" prefWidth="202.4000122070313" text="Адрес" />
+                          </columns>
+                        </TableView>
+                        <Button fx:id="delete_sup" layoutX="23.0" layoutY="609.0" mnemonicParsing="false" onAction="#DeleteSupplierButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Удалить" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="view_prices" layoutX="220.0" layoutY="609.0" mnemonicParsing="false" onAction="#ViewPricesButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Цены" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <TextField fx:id="name_sup" layoutX="741.0" layoutY="93.0" prefHeight="37.0" prefWidth="231.0" promptText="Название">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <TextField fx:id="phone_sup" layoutX="741.0" layoutY="143.0" prefHeight="37.0" prefWidth="231.0" promptText="Телефон">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <TextField fx:id="email_sup" layoutX="741.0" layoutY="193.0" prefHeight="37.0" prefWidth="231.0" promptText="Email">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <TextField fx:id="addr_sup" layoutX="741.0" layoutY="243.0" prefHeight="37.0" prefWidth="231.0" promptText="Адрес">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <Button fx:id="add_supplier" layoutX="767.0" layoutY="296.0" mnemonicParsing="false" onAction="#AddSupplierButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Добавить" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="edit_supplier" layoutX="767.0" layoutY="347.0" mnemonicParsing="false" onAction="#EditSupplierButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Редактировать" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Label fx:id="label11" layoutX="741.0" layoutY="70.0" nodeOrientation="LEFT_TO_RIGHT" text="Форма добавления:" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="materials_tab" text="Материалы">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #fff;">
+                     <children>
+                        <TextField fx:id="search_field_mat" layoutX="23.0" layoutY="24.0" promptText="Поиск">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </TextField>
+                        <TableView fx:id="table_materials" editable="true" layoutX="23.0" layoutY="62.0" onMouseClicked="#MatTableMouseClicked" prefHeight="530.0" prefWidth="683.0" stylesheets="@../../../static/style.css">
+                           <columns>
+                              <TableColumn fx:id="number_col" prefWidth="100.0" text="Номер" />
+                              <TableColumn fx:id="name_mat_col" prefWidth="160.0" text="Название" />
+                              <TableColumn fx:id="type_col" prefWidth="100.0" text="Тип" />
+                              <TableColumn fx:id="stock_quant_col" prefWidth="160.0" text="Кол-во на складе" />
+                              <TableColumn fx:id="order_quant_col" prefWidth="162.4000122070313" text="Необходимое кол-во" />
+                           </columns>
+                        </TableView>
+                        <Button fx:id="delete_material" layoutX="23.0" layoutY="609.0" mnemonicParsing="false" onAction="#DeleteMaterialButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Удалить" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="history_materials" layoutX="222.0" layoutY="609.0" mnemonicParsing="false" onAction="#ViewHistoryButtonOnAction" prefHeight="40.0" prefWidth="198.0" text="История изменений" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <TextField fx:id="number_mat" layoutX="741.0" layoutY="93.0" prefHeight="37.0" prefWidth="231.0" promptText="Номенклатурный номер">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <TextField fx:id="name_mat" layoutX="741.0" layoutY="143.0" prefHeight="37.0" prefWidth="231.0" promptText="Название">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <TextField fx:id="type_mat" layoutX="741.0" layoutY="193.0" prefHeight="37.0" prefWidth="231.0" promptText="Тип">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <TextField fx:id="stock_mat" layoutX="741.0" layoutY="243.0" prefHeight="37.0" prefWidth="231.0" promptText="Количество на складе">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <Button fx:id="add_material" layoutX="767.0" layoutY="296.0" mnemonicParsing="false" onAction="#AddMaterialButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Добавить" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="edit_material" layoutX="767.0" layoutY="347.0" mnemonicParsing="false" onAction="#EditMaterialButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Редактировать" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <ComboBox fx:id="type_mat_comb" layoutX="235.0" layoutY="21.0" onAction="#SearchByTypesButtonOnAction" prefHeight="31.0" prefWidth="167.0" promptText="Тип материала" style="-fx-font-size: 14;" stylesheets="@../../../static/style.css" />
+                        <Button fx:id="clean_button" layoutX="410.0" layoutY="21.0" mnemonicParsing="false" onAction="#CleanButtonOnAction" prefHeight="29.0" prefWidth="100.0" text="Сбросить" textFill="WHITE">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                        <Label fx:id="label111" layoutX="741.0" layoutY="70.0" nodeOrientation="LEFT_TO_RIGHT" text="Форма добавления:" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="supply_tab" text="Поставка">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #fff;">
+                     <children>
+                        <TextField fx:id="search_field_doc" layoutX="23.0" layoutY="24.0" promptText="Поиск" style="-fx-font-size: 14;">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </TextField>
+                        <TableView fx:id="table_supplies" editable="true" layoutX="23.0" layoutY="62.0" onMouseClicked="#SDTableMouseClicked" prefHeight="530.0" prefWidth="683.0">
+                           <columns>
+                              <TableColumn fx:id="num_doc_col" prefWidth="100.0" text="Номер" />
+                              <TableColumn fx:id="mat_doc_col" prefWidth="130.0" text="Материал" />
+                              <TableColumn fx:id="sup_doc_col" prefWidth="130.0" text="Поставщик" />
+                              <TableColumn fx:id="quant_doc_col" prefWidth="77.5999755859375" text="Кол-во" />
+                              <TableColumn fx:id="price_doc_col" prefWidth="111.20001220703125" text="Стоимость" />
+                              <TableColumn fx:id="date_doc_col" prefWidth="132.79998779296875" text="Дата" />
+                           </columns>
+                        </TableView>
+                        <Button fx:id="delete_document" layoutX="23.0" layoutY="609.0" mnemonicParsing="false" onAction="#DeleteDocumentButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Удалить" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <TextField fx:id="num_doc" layoutX="741.0" layoutY="93.0" prefHeight="37.0" prefWidth="231.0" promptText="Номер документа">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <TextField fx:id="mat_doc" layoutX="741.0" layoutY="143.0" prefHeight="37.0" prefWidth="231.0" promptText="Материал">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <TextField fx:id="quant_doc" layoutX="741.0" layoutY="243.0" prefHeight="37.0" prefWidth="231.0" promptText="Количество">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <Button fx:id="add_document" layoutX="767.0" layoutY="396.0" mnemonicParsing="false" onAction="#AddDocumentButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Добавить" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="edit_document" layoutX="767.0" layoutY="447.0" mnemonicParsing="false" onAction="#EditDocumentButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Редактировать" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <ComboBox fx:id="sup_doc" layoutX="741.0" layoutY="193.0" prefHeight="37.0" prefWidth="231.0" promptText="Поставщик" style="-fx-font-size: 16;" />
+                        <DatePicker fx:id="date_doc" editable="false" layoutX="741.0" layoutY="342.0" prefHeight="37.0" prefWidth="231.0" promptText="Дата" style="-fx-font-size: 16;" />
+                        <TextField fx:id="price_doc" layoutX="741.0" layoutY="292.0" prefHeight="38.0" prefWidth="175.0" promptText="Стоимость">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <Button fx:id="generate_price" layoutX="930.0" layoutY="290.0" mnemonicParsing="false" onAction="#GeneratePriceButtonOnAction" prefHeight="40.0" prefWidth="41.0" text="\$" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Label fx:id="label112" layoutX="741.0" layoutY="70.0" nodeOrientation="LEFT_TO_RIGHT" text="Форма добавления:" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="prod_orders_tab" text="Данные отдела производства">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #fff;">
+                     <children>
+                        <TextField fx:id="search_field_po" layoutX="23.0" layoutY="24.0" promptText="Поиск">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </TextField>
+                        <TableView fx:id="table_po" editable="true" layoutX="23.0" layoutY="62.0" onMouseClicked="#POTableMouseClicked" prefHeight="530.0" prefWidth="683.0">
+                           <columns>
+                              <TableColumn fx:id="mat_po_col" prefWidth="260.0" text="Материал" />
+                              <TableColumn fx:id="date_po_col" prefWidth="160.0" text="Дата" />
+                              <TableColumn fx:id="quant_po_col" prefWidth="130.0" text="Количество" />
+                              <TableColumn fx:id="rej_po_col" prefWidth="131.9999877929688" text="Брак" />
+                           </columns>
+                        </TableView>
+                        <Button fx:id="delete_po" layoutX="23.0" layoutY="609.0" mnemonicParsing="false" onAction="#DeleteProductionOrderButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Удалить" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="wrire_off" layoutX="222.0" layoutY="609.0" mnemonicParsing="false" onAction="#WriteOffButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Списать" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <TextField fx:id="material_po" layoutX="741.0" layoutY="93.0" prefHeight="37.0" prefWidth="231.0" promptText="Материал">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <TextField fx:id="need_quant_po" layoutX="741.0" layoutY="193.0" prefHeight="37.0" prefWidth="231.0" promptText="Необходимое кол-во">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <TextField fx:id="reject_po" layoutX="741.0" layoutY="553.0" prefHeight="38.0" prefWidth="134.0" promptText="Брак">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <Button fx:id="add_po" layoutX="767.0" layoutY="244.0" mnemonicParsing="false" onAction="#AddProductionOrderButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Добавить" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="edit_po" layoutX="767.0" layoutY="295.0" mnemonicParsing="false" onAction="#EditProductionOrderButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Редактировать" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="add_reject" layoutX="890.0" layoutY="552.0" mnemonicParsing="false" onAction="#AddRejectedMaterialButtonOnAction" prefHeight="40.0" prefWidth="81.0" text="Внести" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="back_write" layoutX="421.0" layoutY="609.0" mnemonicParsing="false" onAction="#BackWriteButtonOnAction" prefHeight="40.0" prefWidth="189.0" text="Отменить списание" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <DatePicker fx:id="date_po" layoutX="741.0" layoutY="143.0" prefHeight="37.0" prefWidth="231.0" promptText="Дата" style="-fx-font-size: 16;" />
+                        <DatePicker fx:id="date_filter_po" layoutX="239.0" layoutY="18.0" onAction="#DateChoiceOnAction" prefHeight="34.0" prefWidth="188.0" promptText="Дата" style="-fx-font-size: 14;" />
+                        <CheckBox fx:id="open_check" layoutX="438.0" layoutY="25.0" mnemonicParsing="false" onAction="#IsOpenPressedOnAction" text="Открытые заказы">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </CheckBox>
+                        <ImageView fx:id="red" fitHeight="20.0" fitWidth="20.0" layoutX="937.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="green" fitHeight="20.0" fitWidth="20.0" layoutX="905.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="blue" fitHeight="20.0" fitWidth="20.0" layoutX="873.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" />
+                        <Label fx:id="label113" layoutX="741.0" layoutY="70.0" nodeOrientation="LEFT_TO_RIGHT" text="Форма добавления:" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="report_tab" text="Отчёты">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #fff;">
+                     <children>
+                        <Button fx:id="consumption_choice" layoutY="14.0" mnemonicParsing="false" onAction="#ConsumptionButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Расход" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="quality_choice" layoutY="54.0" mnemonicParsing="false" onAction="#QualityButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Качество" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="suppliers_choice" layoutY="92.0" mnemonicParsing="false" onAction="#SuppliersChoiceButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Поставщики" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="show_report" layoutX="31.0" layoutY="262.0" mnemonicParsing="false" onAction="#ShowReportButtonOnAction" prefHeight="40.0" prefWidth="175.0" text="Отчёт" textFill="WHITE" visible="false">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <DatePicker fx:id="date_from" layoutX="30.0" layoutY="161.0" prefHeight="38.0" prefWidth="175.0" promptText="Дата c" style="-fx-font-size: 16;" visible="false" />
+                        <DatePicker fx:id="date_to" layoutX="30.0" layoutY="211.0" prefHeight="38.0" prefWidth="175.0" promptText="Дата по" style="-fx-font-size: 16;" visible="false" />
+                        <TextArea fx:id="report_text" layoutX="263.0" layoutY="14.0" prefHeight="646.0" prefWidth="722.0" visible="false">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextArea>
+                        <Button fx:id="show_diagram" layoutX="31.0" layoutY="312.0" mnemonicParsing="false" onAction="#ShowDiagramButtonOnAction" prefHeight="40.0" prefWidth="175.0" text="Диаграмма" textFill="WHITE" visible="false">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="load_button" layoutX="31.0" layoutY="362.0" mnemonicParsing="false" onAction="#LoadButtonOnAction" prefHeight="40.0" prefWidth="175.0" text="Скачать" textFill="WHITE" visible="false">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
+                        <CheckBox fx:id="avg_check" layoutX="70.0" layoutY="211.0" mnemonicParsing="false" onAction="#AvgCheckPressedOnAction" text="Среднее " visible="false">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </CheckBox>
+                        <ComboBox fx:id="mat_report" layoutX="19.0" layoutY="161.0" prefHeight="38.0" prefWidth="200.0" promptText="Материал" style="-fx-font-size: 16;" visible="false" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
