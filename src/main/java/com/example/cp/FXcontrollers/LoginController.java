@@ -75,6 +75,7 @@ public class LoginController {
                 Parent root = fxmlLoader.getRoot();
                 Stage stage = new Stage();
                 stage.setTitle("Новый пароль");
+                stage.setMaximized(true);
                 stage.setScene(new Scene(root));
                 FirstEntranceController controller = fxmlLoader.getController();
                 controller.initialize(false, loginTextField.getText());
@@ -107,6 +108,7 @@ public class LoginController {
                     fxmlLoader.load();
                     Parent root = fxmlLoader.getRoot();
                     Stage stage = new Stage();
+                    stage.setMaximized(true);
                     stage.setScene(new Scene(root));
                     if (auth_role.getRole()) {
                         stage.setTitle("Меню ответственного за материальные потоки");

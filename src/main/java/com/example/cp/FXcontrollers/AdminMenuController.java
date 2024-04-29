@@ -171,6 +171,8 @@ public class AdminMenuController {
     @FXML
     private TableColumn<MaterialsDBProperty, String> type_col;
     @FXML
+    private ImageView menu_picture;
+    @FXML
     private TextField type_mat;
     @FXML
     private ComboBox<String> type_mat_comb;
@@ -243,6 +245,8 @@ public class AdminMenuController {
     private TableColumn<ProductionOrdersDBProperty, String> date_po_col;
     @FXML
     private Button delete_po;
+    @FXML
+    private ImageView user_image;
     @FXML
     private Button edit_po;
     @FXML
@@ -341,9 +345,11 @@ public class AdminMenuController {
         red.setImage(new Image(RestClient.class.getResource("red.png").openStream()));
         blue.setImage(new Image(RestClient.class.getResource("blue.png").openStream()));
         green.setImage(new Image(RestClient.class.getResource("green.png").openStream()));
-        Tooltip red_tooltip =new Tooltip("Заказ с браком");
-        Tooltip blue_tooltip =new Tooltip("Открытый заказ");
-        Tooltip green_tooltip =new Tooltip("Закрытый заказ");
+        menu_picture.setImage(new Image(RestClient.class.getResource("menu_picture.jpg").openStream()));
+        user_image.setImage(new Image(RestClient.class.getResource("user_image.png").openStream()));
+        Tooltip red_tooltip =new Tooltip("Заявка с браком");
+        Tooltip blue_tooltip =new Tooltip("Открытая заявка");
+        Tooltip green_tooltip =new Tooltip("Закрытая заявка");
         Tooltip.install(red, red_tooltip);
         Tooltip.install(blue, blue_tooltip);
         Tooltip.install(green, green_tooltip);

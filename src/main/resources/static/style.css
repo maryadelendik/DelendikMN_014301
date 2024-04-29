@@ -176,6 +176,8 @@
     -fx-border-color: transparent;
     -fx-background-color: transparent;
     -fx-text-fill: black;
+    -fx-font-size: 14 px;
+
 }
 /*.table-view .corner {
     -fx-background-color: transparent;
@@ -255,7 +257,7 @@
     -fx-alignment: CENTER;
     -fx-text-fill: #001933;
     -fx-padding: 0 10 0 10;
-    -fx-font-size: 13,5px;
+    -fx-font-size: 15px;
 }
 .tab-pane {
     -fx-background-color: transparent;
