@@ -172,11 +172,12 @@
                         </TextField>
                         <TableView fx:id="table_materials" editable="true" layoutX="23.0" layoutY="62.0" onMouseClicked="#MatTableMouseClicked" prefHeight="635.0" prefWidth="1150.0" stylesheets="@../../../static/style.css">
                            <columns>
-                              <TableColumn fx:id="number_col" prefWidth="230.0" text="Номер" />
-                              <TableColumn fx:id="name_mat_col" prefWidth="230.0" text="Название" />
-                              <TableColumn fx:id="type_col" prefWidth="230.0" text="Тип" />
-                              <TableColumn fx:id="stock_quant_col" prefWidth="230.0" text="Кол-во на складе" />
-                              <TableColumn fx:id="order_quant_col" prefWidth="226.4000000000001" text="Необходимое кол-во" />
+                              <TableColumn fx:id="number_col" prefWidth="225.0" text="Номер" />
+                              <TableColumn fx:id="name_mat_col" prefWidth="225.0" text="Название" />
+                              <TableColumn fx:id="type_col" prefWidth="210.0" text="Тип" />
+                              <TableColumn fx:id="stock_quant_col" prefWidth="150.0" text="Кол-во на складе" />
+                              <TableColumn fx:id="order_quant_col" prefWidth="170.0" text="Необходимое кол-во" />
+                              <TableColumn fx:id="unit_col" prefWidth="165.60001220703134" text="Единица измерения" />
                            </columns>
                         </TableView>
                         <Button fx:id="delete_material" layoutX="23.0" layoutY="712.0" mnemonicParsing="false" onAction="#DeleteMaterialButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Удалить" textFill="WHITE">
@@ -209,12 +210,12 @@
                               <Font size="16.0" />
                            </font>
                         </TextField>
-                        <Button fx:id="add_material" layoutX="1249.0" layoutY="296.0" mnemonicParsing="false" onAction="#AddMaterialButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Добавить" textFill="WHITE">
+                        <Button fx:id="add_material" layoutX="1249.0" layoutY="341.0" mnemonicParsing="false" onAction="#AddMaterialButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Добавить" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="edit_material" layoutX="1249.0" layoutY="347.0" mnemonicParsing="false" onAction="#EditMaterialButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Редактировать" textFill="WHITE">
+                        <Button fx:id="edit_material" layoutX="1249.0" layoutY="392.0" mnemonicParsing="false" onAction="#EditMaterialButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Редактировать" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
@@ -226,6 +227,11 @@
                            </font>
                         </Button>
                         <Label fx:id="label111" layoutX="1199.0" layoutY="70.0" nodeOrientation="LEFT_TO_RIGHT" text="Форма добавления:" />
+                        <TextField fx:id="unit" layoutX="1199.0" layoutY="293.0" prefHeight="37.0" prefWidth="300.0" promptText="Единица измерения">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
                      </children>
                   </AnchorPane>
                </content>
@@ -241,12 +247,16 @@
                         </TextField>
                         <TableView fx:id="table_supplies" editable="true" layoutX="23.0" layoutY="62.0" onMouseClicked="#SDTableMouseClicked" prefHeight="635.0" prefWidth="1150.0">
                            <columns>
-                              <TableColumn fx:id="num_doc_col" prefWidth="191.0" text="Номер" />
-                              <TableColumn fx:id="mat_doc_col" prefWidth="191.0" text="Материал" />
-                              <TableColumn fx:id="sup_doc_col" prefWidth="192.0" text="Поставщик" />
-                              <TableColumn fx:id="quant_doc_col" prefWidth="192.0" text="Кол-во" />
-                              <TableColumn fx:id="price_doc_col" prefWidth="192.0" text="Стоимость" />
-                              <TableColumn fx:id="date_doc_col" prefWidth="192.0" text="Дата" />
+                              <TableColumn fx:id="num_doc_col" prefWidth="150.0" text="Номер" />
+                              <TableColumn fx:id="lot_col" prefWidth="150.0" text="Партия" />
+                              <TableColumn fx:id="mat_doc_col" prefWidth="150.0" text="Материал" />
+                              <TableColumn fx:id="sup_doc_col" prefWidth="150.0" text="Поставщик" />
+                              <TableColumn fx:id="quant_doc_col" prefWidth="115.0" text="Кол-во" />
+                              <TableColumn fx:id="price_item_col" prefWidth="115.0" text="Цена за ед." />
+                              <TableColumn fx:id="price_doc_col" prefWidth="115.0" text="Стоимость" />
+                              <TableColumn fx:id="date_doc_col" prefWidth="115.0" text="Дата" />
+                              <TableColumn fx:id="month_leftovers_col" prefWidth="210.0" text="Остаток на начало месяца" />
+                              <TableColumn fx:id="current_stock_col" prefWidth="150.0" text="Текущее кол-во" />
                            </columns>
                         </TableView>
                         <Button fx:id="delete_document" layoutX="23.0" layoutY="712.0" mnemonicParsing="false" onAction="#DeleteDocumentButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Удалить" textFill="WHITE">

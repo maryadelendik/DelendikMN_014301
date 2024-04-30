@@ -7,7 +7,7 @@ public class MaterialsDBProperty {
 
     private final SimpleIntegerProperty id;
     private final SimpleStringProperty name;
-
+    private final SimpleStringProperty unit;
     private final SimpleStringProperty number;
     private final SimpleStringProperty type;
     private final SimpleIntegerProperty stock_quantity;
@@ -22,7 +22,19 @@ public class MaterialsDBProperty {
         type = new SimpleStringProperty(materialsDB.getType());
         stock_quantity = new SimpleIntegerProperty(materialsDB.getStock_quantity());
         order_quantity = new SimpleIntegerProperty(materialsDB.getOrder_quantity());
+        unit = new SimpleStringProperty(materialsDB.getUnit());
+    }
 
+    public String getUnit() {
+        return unit.get();
+    }
+
+    public SimpleStringProperty unitProperty() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit.set(unit);
     }
 
     public int getId() {

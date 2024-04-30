@@ -11,9 +11,15 @@ public class SupplyDocumentsDB implements Serializable {
     private Integer quantity;
     private String date;
     private Float price;
+    private Float price_item;
+    private Integer month_leftovers;
+    private String lot;
+    private Integer current_stock;
 
 
-    public SupplyDocumentsDB(Integer id, Integer mat_sup, String number, String material, String supplier, Integer quantity, String date, Float price) {
+
+    public SupplyDocumentsDB(Integer id, Integer mat_sup, String number, String material, String supplier, Integer quantity, String date, Float price,
+                             Float price_item,Integer month_leftovers,String lot,Integer current_stock) {
         this.id = id;
         this.mat_sup = mat_sup;
         this.number = number;
@@ -22,10 +28,46 @@ public class SupplyDocumentsDB implements Serializable {
         this.quantity = quantity;
         this.date = date;
         this.price = price;
+        this.price_item = price_item;
+        this.month_leftovers = month_leftovers;
+        this.lot = lot;
+        this.current_stock = current_stock;
     }
 
     public SupplyDocumentsDB() {
 
+    }
+
+    public Float getPrice_item() {
+        return price_item;
+    }
+
+    public void setPrice_item(Float price_item) {
+        this.price_item = price_item;
+    }
+
+    public Integer getMonth_leftovers() {
+        return month_leftovers;
+    }
+
+    public void setMonth_leftovers(Integer month_leftovers) {
+        this.month_leftovers = month_leftovers;
+    }
+
+    public String getLot() {
+        return lot;
+    }
+
+    public void setLot(String lot) {
+        this.lot = lot;
+    }
+
+    public Integer getCurrent_stock() {
+        return current_stock;
+    }
+
+    public void setCurrent_stock(Integer current_stock) {
+        this.current_stock = current_stock;
     }
 
     public Integer getId() {
@@ -103,6 +145,10 @@ public class SupplyDocumentsDB implements Serializable {
                 ", quantity=" + quantity +
                 ", date='" + date + '\'' +
                 ", price=" + price +
+                ", price_item=" + price_item +
+                ", month_leftovers=" + month_leftovers +
+                ", lot='" + lot + '\'' +
+                ", current_stock=" + current_stock +
                 '}';
     }
 }

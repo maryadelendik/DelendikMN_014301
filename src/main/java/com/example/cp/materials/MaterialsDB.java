@@ -10,35 +10,29 @@ public class MaterialsDB implements Serializable {
     private Integer stock_quantity;
     private Integer order_quantity;
     private String user_login;
+    private String unit;
 
-    public MaterialsDB(String user_login) {
-        this.user_login = user_login;
-    }
-
-    public MaterialsDB(Integer id, String name, String number, String type, Integer stock_quantity, Integer order_quantity) {
+    public MaterialsDB(Integer id, String name, String number, String type, Integer stock_quantity, Integer order_quantity, String user_login, String unit) {
         this.id = id;
         this.name = name;
         this.number = number;
         this.type = type;
         this.stock_quantity = stock_quantity;
         this.order_quantity = order_quantity;
+        this.user_login = user_login;
+        this.unit = unit;
     }
 
-   public MaterialsDB() {
+    public MaterialsDB() {
 
     }
 
-    @Override
-    public String toString() {
-        return "MaterialsDB{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", number='" + number + '\'' +
-                ", type='" + type + '\'' +
-                ", stock_quantity=" + stock_quantity +
-                ", order_quantity=" + order_quantity +
-                ", user_login='" + user_login + '\'' +
-                '}';
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     public String getUser_login() {
@@ -95,5 +89,19 @@ public class MaterialsDB implements Serializable {
 
     public void setOrder_quantity(Integer order_quantity) {
         this.order_quantity = order_quantity;
+    }
+
+    @Override
+    public String toString() {
+        return "MaterialsDB{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", number='" + number + '\'' +
+                ", type='" + type + '\'' +
+                ", stock_quantity=" + stock_quantity +
+                ", order_quantity=" + order_quantity +
+                ", user_login='" + user_login + '\'' +
+                ", unit='" + unit + '\'' +
+                '}';
     }
 }

@@ -14,7 +14,10 @@ public class SupplyDocumentsDBProperty {
     private final SimpleStringProperty material;
     private final SimpleStringProperty supplier;
     private final SimpleStringProperty date;
-
+    private final SimpleFloatProperty price_item;
+    private final SimpleIntegerProperty month_leftovers;
+    private final SimpleStringProperty lot;
+    private final SimpleIntegerProperty current_stock;
 
 
     public SupplyDocumentsDBProperty(SupplyDocumentsDB supplyDocumentsDB) {
@@ -26,7 +29,58 @@ public class SupplyDocumentsDBProperty {
         material = new SimpleStringProperty(supplyDocumentsDB.getMaterial());
         supplier = new SimpleStringProperty(supplyDocumentsDB.getSupplier());
         date = new SimpleStringProperty(supplyDocumentsDB.getDate());
+        price_item = new SimpleFloatProperty(supplyDocumentsDB.getPrice_item());
+        month_leftovers = new SimpleIntegerProperty(supplyDocumentsDB.getMonth_leftovers());
+        lot = new SimpleStringProperty(supplyDocumentsDB.getLot());
+        current_stock = new SimpleIntegerProperty(supplyDocumentsDB.getCurrent_stock());
+    }
 
+    public float getPrice_item() {
+        return price_item.get();
+    }
+
+    public SimpleFloatProperty price_itemProperty() {
+        return price_item;
+    }
+
+    public void setPrice_item(float price_item) {
+        this.price_item.set(price_item);
+    }
+
+    public int getMonth_leftovers() {
+        return month_leftovers.get();
+    }
+
+    public SimpleIntegerProperty month_leftoversProperty() {
+        return month_leftovers;
+    }
+
+    public void setMonth_leftovers(int month_leftovers) {
+        this.month_leftovers.set(month_leftovers);
+    }
+
+    public String getLot() {
+        return lot.get();
+    }
+
+    public SimpleStringProperty lotProperty() {
+        return lot;
+    }
+
+    public void setLot(String lot) {
+        this.lot.set(lot);
+    }
+
+    public int getCurrent_stock() {
+        return current_stock.get();
+    }
+
+    public SimpleIntegerProperty current_stockProperty() {
+        return current_stock;
+    }
+
+    public void setCurrent_stock(int current_stock) {
+        this.current_stock.set(current_stock);
     }
 
     public int getQuantity() {

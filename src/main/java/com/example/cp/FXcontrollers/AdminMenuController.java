@@ -131,7 +131,14 @@ public class AdminMenuController {
     private TextField number_mat;
     @FXML
     private DatePicker date_from;
-
+    @FXML
+    private TableColumn<SupplyDocumentsDBProperty, Float> price_item_col;
+    @FXML
+    private TableColumn<SupplyDocumentsDBProperty, Integer> month_leftovers_col;
+    @FXML
+    private TableColumn<SupplyDocumentsDBProperty, String> lot_col;
+    @FXML
+    private TableColumn<SupplyDocumentsDBProperty, Integer> current_stock_col;
     @FXML
     private DatePicker date_to;
     @FXML
@@ -170,6 +177,11 @@ public class AdminMenuController {
     private TableView<SuppliersDBProperty> table_suppliers;
     @FXML
     private TableColumn<MaterialsDBProperty, String> type_col;
+    @FXML
+    private TextField unit;
+
+    @FXML
+    private TableColumn<MaterialsDBProperty, String> unit_col;
     @FXML
     private ImageView menu_picture;
     @FXML
@@ -329,6 +341,7 @@ public class AdminMenuController {
         type_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getType()));
         stock_quant_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getStock_quantity()).asObject());
         order_quant_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getOrder_quantity()).asObject());
+        unit_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getUnit()));
 
         num_doc_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getNumber()));
         mat_doc_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getMaterial()));
@@ -336,6 +349,10 @@ public class AdminMenuController {
         quant_doc_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getQuantity()).asObject());
         price_doc_col.setCellValueFactory(field -> new SimpleFloatProperty(field.getValue().getPrice()).asObject());
         date_doc_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getDate()));
+        price_item_col.setCellValueFactory(field -> new SimpleFloatProperty(field.getValue().getPrice_item()).asObject());
+        lot_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getLot()));
+        current_stock_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getCurrent_stock()).asObject());
+        month_leftovers_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getMonth_leftovers()).asObject());
 
         mat_po_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getNumber_material()));
         date_po_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getDate()));
@@ -453,6 +470,7 @@ public class AdminMenuController {
         number_mat.setText("");
         type_mat.setText("");
         stock_mat.setText("");
+        unit.setText("");
         table_materials.refresh();
         table_materials.setRowFactory(tv -> new TableRow<MaterialsDBProperty>() {
             protected void updateItem(MaterialsDBProperty item, boolean empty) {
@@ -692,6 +710,7 @@ public class AdminMenuController {
         name_mat.setText("");
         number_mat.setText("");
         type_mat.setText("");
+        unit.setText("");
         stock_mat.setText("");
     //    HttpClient httpClient = HttpClient.newHttpClient();
         String value = type_mat_comb.getSelectionModel().getSelectedItem();
@@ -752,6 +771,7 @@ public class AdminMenuController {
         number_mat.setText(table_materials.getSelectionModel().getSelectedItem().getNumber());
         type_mat.setText(table_materials.getSelectionModel().getSelectedItem().getType());
         stock_mat.setText(String.valueOf(table_materials.getSelectionModel().getSelectedItem().getStock_quantity()));
+        unit.setText(table_materials.getSelectionModel().getSelectedItem().getUnit());
     }
     @FXML
     void POTableMouseClicked(MouseEvent event) {
@@ -1086,7 +1106,7 @@ public class AdminMenuController {
     @FXML
     void AddMaterialButtonOnAction(ActionEvent event) throws IOException, InterruptedException {
         if (name_mat.getText().isEmpty() || number_mat.getText().isEmpty()||type_mat.getText().isEmpty() ||
-                stock_mat.getText().isEmpty())
+                stock_mat.getText().isEmpty()|| unit.getText().isEmpty())
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка");
@@ -1115,6 +1135,7 @@ public class AdminMenuController {
                 materialsDB.setType(type_mat.getText().trim());
                 materialsDB.setStock_quantity(Integer.valueOf(stock_mat.getText().trim()));
                 materialsDB.setUser_login(main_login);
+                materialsDB.setUnit(unit.getText().trim());
 
                 org.apache.http.client.HttpClient client = HttpClients.createDefault();
                 HttpPost request = new HttpPost(BASE_MATERIAL+"/add");
@@ -1183,7 +1204,7 @@ public class AdminMenuController {
         }
         else {
             if (name_mat.getText().isEmpty() || number_mat.getText().isEmpty()||type_mat.getText().isEmpty() ||
-                    stock_mat.getText().isEmpty()) {
+                    stock_mat.getText().isEmpty()|| unit.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Ошибка");
                 alert.setHeaderText(null);
@@ -1205,6 +1226,7 @@ public class AdminMenuController {
                     materialsDB.setType(type_mat.getText().trim());
                     materialsDB.setStock_quantity(Integer.valueOf(stock_mat.getText().trim()));
                     materialsDB.setOrder_quantity(table_materials.getSelectionModel().getSelectedItem().getOrder_quantity());
+                    materialsDB.setUnit(unit.getText().trim());
                     if (!check_material_for_update(materialsDB)){
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setTitle("Ошибка");

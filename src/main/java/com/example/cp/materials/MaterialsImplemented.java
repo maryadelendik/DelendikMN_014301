@@ -34,6 +34,7 @@ public class MaterialsImplemented implements Materials {
                 materialsDBs.setType(resultSet.getString("type"));
                 materialsDBs.setStock_quantity(resultSet.getInt("stock_quantity"));
                 materialsDBs.setOrder_quantity(resultSet.getInt("order_quantity"));
+                materialsDBs.setUnit(resultSet.getString("unit"));
                 materialsDB.add(materialsDBs);
             }
             materialsDB.sort(Comparator.comparing(MaterialsDB::getId).reversed());
@@ -63,6 +64,7 @@ public class MaterialsImplemented implements Materials {
                 materialsDBs.setType(resultSet.getString("type"));
                 materialsDBs.setStock_quantity(resultSet.getInt("stock_quantity"));
                 materialsDBs.setOrder_quantity(resultSet.getInt("order_quantity"));
+                materialsDBs.setUnit(resultSet.getString("unit"));
                 materialsDB.add(materialsDBs);
             }
             materialsDB.sort(Comparator.comparing(MaterialsDB::getId).reversed());
@@ -100,7 +102,7 @@ public class MaterialsImplemented implements Materials {
                 materialsDBs.setType(resultSet.getString("type"));
                 materialsDBs.setStock_quantity(resultSet.getInt("stock_quantity"));
                 materialsDBs.setOrder_quantity(resultSet.getInt("order_quantity"));
-
+                materialsDBs.setUnit(resultSet.getString("unit"));
                 materialsDB.add(materialsDBs);
             }
             materialsDB.sort(Comparator.comparing(MaterialsDB::getId).reversed());
@@ -231,6 +233,11 @@ public class MaterialsImplemented implements Materials {
                     historyDBS.setOld_value(resultSet.getString("name"));
                     historyDBS.setNew_value(materialsDB.getName());
                     historyDB.add(historyDBS);
+                }if(!Objects.equals(materialsDB.getUnit(), resultSet.getString("unit"))){
+                    HistoryDB historyDBS = new HistoryDB();
+                    historyDBS.setOld_value(resultSet.getString("unit"));
+                    historyDBS.setNew_value(materialsDB.getUnit());
+                    historyDB.add(historyDBS);
                 }
                 if(!Objects.equals(materialsDB.getType(), resultSet.getString("type"))){
                     HistoryDB historyDBS = new HistoryDB();
@@ -253,8 +260,8 @@ public class MaterialsImplemented implements Materials {
 
     @Override
     public void save(MaterialsDB materialsDB) {
-        String sqlRequest = "INSERT INTO materials (name, number, type, stock_quantity) " +
-                "VALUES(?, ?, ?, ?)";
+        String sqlRequest = "INSERT INTO materials (name, number, type, stock_quantity, unit) " +
+                "VALUES(?, ?, ?, ?, ?)";
         String number;
         try {
             PreparedStatement statement = connection.prepareStatement(sqlRequest);
@@ -263,6 +270,7 @@ public class MaterialsImplemented implements Materials {
             statement.setString(2, materialsDB.getNumber());
             statement.setString(3, materialsDB.getType());
             statement.setInt(4, materialsDB.getStock_quantity());
+            statement.setString(5, materialsDB.getUnit());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -310,6 +318,7 @@ public class MaterialsImplemented implements Materials {
                 " number = ?," +
                 " type = ?," +
                 " stock_quantity = ? ," +
+                " unit = ? ," +
                 " order_quantity = ? " +
                 " WHERE id = ?";
 
@@ -320,8 +329,9 @@ public class MaterialsImplemented implements Materials {
             preparedStatement.setString(2, materialsDB.getNumber());
             preparedStatement.setString(3, materialsDB.getType());
             preparedStatement.setInt(4, materialsDB.getStock_quantity());
-            preparedStatement.setInt(5, materialsDB.getOrder_quantity());
-            preparedStatement.setInt(6, materialsDB.getId());
+            preparedStatement.setString(5, materialsDB.getUnit());
+            preparedStatement.setInt(6, materialsDB.getOrder_quantity());
+            preparedStatement.setInt(7, materialsDB.getId());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
