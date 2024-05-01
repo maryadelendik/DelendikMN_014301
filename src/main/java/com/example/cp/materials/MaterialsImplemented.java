@@ -260,8 +260,8 @@ public class MaterialsImplemented implements Materials {
 
     @Override
     public void save(MaterialsDB materialsDB) {
-        String sqlRequest = "INSERT INTO materials (name, number, type, stock_quantity, unit) " +
-                "VALUES(?, ?, ?, ?, ?)";
+        String sqlRequest = "INSERT INTO materials (name, number, type,  unit) " +
+                "VALUES(?, ?, ?, ?)";
         String number;
         try {
             PreparedStatement statement = connection.prepareStatement(sqlRequest);
@@ -269,8 +269,7 @@ public class MaterialsImplemented implements Materials {
             number=materialsDB.getNumber();
             statement.setString(2, materialsDB.getNumber());
             statement.setString(3, materialsDB.getType());
-            statement.setInt(4, materialsDB.getStock_quantity());
-            statement.setString(5, materialsDB.getUnit());
+            statement.setString(4, materialsDB.getUnit());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

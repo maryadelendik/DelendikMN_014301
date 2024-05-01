@@ -41,6 +41,13 @@ public class SupplyDocumentController {
         supplyDocuments.save(supplyDocumentsDB);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @PostMapping ("/align")
+    public ResponseEntity<String> alignLeftovers() {
+        System.out.println("Выполняется выравнивание остатков...");
+        SupplyDocuments supplyDocuments = new SupplyDocumentsImplemented();
+        supplyDocuments.alignLeftovers();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     @GetMapping ("/search/{string}")
     public ResponseEntity<List<SupplyDocumentsDB>> search(@PathVariable String string) {
         System.out.println("Выполняется поиск документов поставки...");

@@ -8,8 +8,9 @@ public interface SupplyDocuments {
 
     List<SupplyDocumentsDB> getAll();
     List<SupplyDocumentsDB> search(String string);
-
+    List<SupplyDocumentsDB> getLots(Integer id);
     void deleteById(Integer id);
+    void alignLeftovers();
 
     void save(SupplyDocumentsDB supplyDocumentsDB);
 

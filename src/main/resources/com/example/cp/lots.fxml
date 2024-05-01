@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #ffffff;" stylesheets="@../../../static/style.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cp.FXcontrollers.LotsController">
+   <children>
+      <TableView fx:id="table" layoutX="28.0" layoutY="25.0" prefHeight="650.0" prefWidth="460.0">
+        <columns>
+            <TableColumn fx:id="lot_column" prefWidth="230.0" text="Партия" />
+            <TableColumn fx:id="quantity_column" prefWidth="230.0" text="Количество" />
+        </columns>
+      </TableView>
+      <ImageView fx:id="lots_image" fitHeight="300.0" fitWidth="300.0" layoutX="610.0" layoutY="375.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="material_label" alignment="CENTER" contentDisplay="CENTER" layoutX="610.0" layoutY="118.0" prefHeight="26.0" prefWidth="300.0">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

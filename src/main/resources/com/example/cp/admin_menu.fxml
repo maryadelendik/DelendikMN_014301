@@ -6,12 +6,14 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Rectangle?>
@@ -174,10 +176,10 @@
                            <columns>
                               <TableColumn fx:id="number_col" prefWidth="225.0" text="Номер" />
                               <TableColumn fx:id="name_mat_col" prefWidth="225.0" text="Название" />
-                              <TableColumn fx:id="type_col" prefWidth="210.0" text="Тип" />
-                              <TableColumn fx:id="stock_quant_col" prefWidth="150.0" text="Кол-во на складе" />
-                              <TableColumn fx:id="order_quant_col" prefWidth="170.0" text="Необходимое кол-во" />
-                              <TableColumn fx:id="unit_col" prefWidth="165.60001220703134" text="Единица измерения" />
+                              <TableColumn fx:id="type_col" prefWidth="225.0" text="Тип" />
+                              <TableColumn fx:id="stock_quant_col" prefWidth="160.0" text="Кол-во на складе" />
+                              <TableColumn fx:id="order_quant_col" prefWidth="180.0" text="Необходимое кол-во" />
+                              <TableColumn fx:id="unit_col" prefWidth="180.0" text="Единица измерения" />
                            </columns>
                         </TableView>
                         <Button fx:id="delete_material" layoutX="23.0" layoutY="712.0" mnemonicParsing="false" onAction="#DeleteMaterialButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Удалить" textFill="WHITE">
@@ -205,17 +207,12 @@
                               <Font size="16.0" />
                            </font>
                         </TextField>
-                        <TextField fx:id="stock_mat" layoutX="1199.0" layoutY="243.0" prefHeight="37.0" prefWidth="300.0" promptText="Количество на складе">
-                           <font>
-                              <Font size="16.0" />
-                           </font>
-                        </TextField>
-                        <Button fx:id="add_material" layoutX="1249.0" layoutY="341.0" mnemonicParsing="false" onAction="#AddMaterialButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Добавить" textFill="WHITE">
+                        <Button fx:id="add_material" layoutX="1249.0" layoutY="295.0" mnemonicParsing="false" onAction="#AddMaterialButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Добавить" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="edit_material" layoutX="1249.0" layoutY="392.0" mnemonicParsing="false" onAction="#EditMaterialButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Редактировать" textFill="WHITE">
+                        <Button fx:id="edit_material" layoutX="1249.0" layoutY="346.0" mnemonicParsing="false" onAction="#EditMaterialButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Редактировать" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
@@ -227,11 +224,16 @@
                            </font>
                         </Button>
                         <Label fx:id="label111" layoutX="1199.0" layoutY="70.0" nodeOrientation="LEFT_TO_RIGHT" text="Форма добавления:" />
-                        <TextField fx:id="unit" layoutX="1199.0" layoutY="293.0" prefHeight="37.0" prefWidth="300.0" promptText="Единица измерения">
+                        <TextField fx:id="unit" layoutX="1199.0" layoutY="243.0" prefHeight="37.0" prefWidth="300.0" promptText="Единица измерения">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </TextField>
+                        <Button fx:id="lots_button" layoutX="439.0" layoutY="712.0" mnemonicParsing="false" onAction="#LotsButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Партии" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
                      </children>
                   </AnchorPane>
                </content>
@@ -269,39 +271,49 @@
                               <Font size="16.0" />
                            </font>
                         </TextField>
-                        <TextField fx:id="mat_doc" layoutX="1199.0" layoutY="143.0" prefHeight="37.0" prefWidth="300.0" promptText="Материал">
+                        <TextField fx:id="mat_doc" layoutX="1199.0" layoutY="193.0" prefHeight="37.0" prefWidth="300.0" promptText="Материал">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </TextField>
-                        <TextField fx:id="quant_doc" layoutX="1199.0" layoutY="243.0" prefHeight="37.0" prefWidth="300.0" promptText="Количество">
+                        <TextField fx:id="quant_doc" layoutX="1199.0" layoutY="293.0" prefHeight="37.0" prefWidth="300.0" promptText="Количество">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </TextField>
-                        <Button fx:id="add_document" layoutX="1249.0" layoutY="396.0" mnemonicParsing="false" onAction="#AddDocumentButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Добавить" textFill="WHITE">
+                        <Button fx:id="add_document" layoutX="1249.0" layoutY="446.0" mnemonicParsing="false" onAction="#AddDocumentButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Добавить" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="edit_document" layoutX="1249.0" layoutY="447.0" mnemonicParsing="false" onAction="#EditDocumentButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Редактировать" textFill="WHITE">
+                        <Button fx:id="edit_document" layoutX="1249.0" layoutY="497.0" mnemonicParsing="false" onAction="#EditDocumentButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Редактировать" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <ComboBox fx:id="sup_doc" layoutX="1199.0" layoutY="193.0" prefHeight="37.0" prefWidth="300.0" promptText="Поставщик" style="-fx-font-size: 16;" />
-                        <DatePicker fx:id="date_doc" editable="false" layoutX="1199.0" layoutY="342.0" prefHeight="37.0" prefWidth="300.0" promptText="Дата" style="-fx-font-size: 16;" />
-                        <TextField fx:id="price_doc" layoutX="1199.0" layoutY="292.0" prefHeight="38.0" prefWidth="245.0" promptText="Стоимость">
+                        <ComboBox fx:id="sup_doc" layoutX="1199.0" layoutY="243.0" prefHeight="37.0" prefWidth="300.0" promptText="Поставщик" style="-fx-font-size: 16;" />
+                        <DatePicker fx:id="date_doc" editable="false" layoutX="1199.0" layoutY="392.0" prefHeight="37.0" prefWidth="300.0" promptText="Дата" style="-fx-font-size: 16;" />
+                        <TextField fx:id="price_doc" layoutX="1199.0" layoutY="342.0" prefHeight="38.0" prefWidth="245.0" promptText="Стоимость">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </TextField>
-                        <Button fx:id="generate_price" layoutX="1457.0" layoutY="291.0" mnemonicParsing="false" onAction="#GeneratePriceButtonOnAction" prefHeight="40.0" prefWidth="41.0" text="\$" textFill="WHITE">
+                        <Button fx:id="generate_price" layoutX="1457.0" layoutY="341.0" mnemonicParsing="false" onAction="#GeneratePriceButtonOnAction" prefHeight="40.0" prefWidth="41.0" text="\$" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Button>
                         <Label fx:id="label112" layoutX="1199.0" layoutY="70.0" nodeOrientation="LEFT_TO_RIGHT" text="Форма добавления:" />
+                        <TextField fx:id="lot_doc" layoutX="1199.0" layoutY="143.0" prefHeight="37.0" prefWidth="300.0" promptText="Партия">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </TextField>
+                        <Button fx:id="align_button" layoutX="222.0" layoutY="712.0" mnemonicParsing="false" onAction="#AlignButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Выровнять остатки" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
                      </children>
                   </AnchorPane>
                </content>
@@ -310,6 +322,7 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #fff;">
                      <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="218.0" layoutX="1199.0" layoutY="480.0" stroke="GREY" strokeType="INSIDE" width="300.0" />
                         <TextField fx:id="search_field_po" layoutX="23.0" layoutY="24.0" promptText="Поиск">
                            <font>
                               <Font size="14.0" />
@@ -328,7 +341,7 @@
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="wrire_off" layoutX="222.0" layoutY="712.0" mnemonicParsing="false" onAction="#WriteOffButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Списать" textFill="WHITE">
+                        <Button fx:id="wrire_off" layoutX="1214.0" layoutY="594.0" mnemonicParsing="false" onAction="#WriteOffButtonOnAction" prefHeight="40.0" prefWidth="270.0" text="Списать" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
@@ -343,7 +356,7 @@
                               <Font size="16.0" />
                            </font>
                         </TextField>
-                        <TextField fx:id="reject_po" layoutX="1199.0" layoutY="553.0" prefHeight="38.0" prefWidth="195.0" promptText="Брак">
+                        <TextField fx:id="reject_po" layoutX="873.0" layoutY="713.0" prefHeight="38.0" prefWidth="195.0" promptText="Брак">
                            <font>
                               <Font size="16.0" />
                            </font>
@@ -358,12 +371,12 @@
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="add_reject" layoutX="1408.0" layoutY="552.0" mnemonicParsing="false" onAction="#AddRejectedMaterialButtonOnAction" prefHeight="40.0" prefWidth="90.0" text="Внести" textFill="WHITE">
+                        <Button fx:id="add_reject" layoutX="1082.0" layoutY="712.0" mnemonicParsing="false" onAction="#AddRejectedMaterialButtonOnAction" prefHeight="40.0" prefWidth="90.0" text="Внести" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="back_write" layoutX="421.0" layoutY="712.0" mnemonicParsing="false" onAction="#BackWriteButtonOnAction" prefHeight="40.0" prefWidth="189.0" text="Отменить списание" textFill="WHITE">
+                        <Button fx:id="back_write" layoutX="1214.0" layoutY="644.0" mnemonicParsing="false" onAction="#BackWriteButtonOnAction" prefHeight="40.0" prefWidth="270.0" text="Отменить списание" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
@@ -379,6 +392,24 @@
                         <ImageView fx:id="green" fitHeight="20.0" fitWidth="20.0" layoutX="1114.0" layoutY="37.0" pickOnBounds="true" preserveRatio="true" />
                         <ImageView fx:id="blue" fitHeight="20.0" fitWidth="20.0" layoutX="1082.0" layoutY="37.0" pickOnBounds="true" preserveRatio="true" />
                         <Label fx:id="label113" layoutX="1199.0" layoutY="70.0" nodeOrientation="LEFT_TO_RIGHT" text="Форма добавления:" />
+                        <RadioButton fx:id="each_rb" layoutX="1214.0" layoutY="552.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="270.0" text="По себестоимости каждой единицы">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="write_off" />
+                           </toggleGroup>
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </RadioButton>
+                        <RadioButton fx:id="mid_rb" layoutX="1214.0" layoutY="521.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="270.0" text="По средней себестоимости" toggleGroup="$write_off">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </RadioButton>
+                        <RadioButton fx:id="fifo_rb" layoutX="1214.0" layoutY="490.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="270.0" text="FIFO" toggleGroup="$write_off">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </RadioButton>
                      </children>
                   </AnchorPane>
                </content>

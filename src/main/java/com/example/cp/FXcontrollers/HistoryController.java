@@ -1,9 +1,5 @@
 package com.example.cp.FXcontrollers;
 
-import com.example.cp.Connect;
-import com.example.cp.suppliers.SuppliersDB;
-import com.example.cp.suppliers.SuppliersDBProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -56,7 +52,7 @@ public class HistoryController {
     ArrayList<String> surnames = new ArrayList<>();
     ArrayList<Float> marks = new ArrayList<>();
     @FXML
-    void initialize(Integer id_material) throws IOException, InterruptedException {
+    void initialize(Integer id_material, String number) throws IOException, InterruptedException {
         user_column.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getUser()));
         time_column.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getDate_time()));
         action_column.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getChanging_type()));

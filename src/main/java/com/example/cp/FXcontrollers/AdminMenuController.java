@@ -74,6 +74,8 @@ public class AdminMenuController {
     @FXML
     private Button add_material;
     @FXML
+    private Button align_button;
+    @FXML
     private Button add_supplier;
     @FXML
     private TextField addr_sup;
@@ -99,6 +101,8 @@ public class AdminMenuController {
     private Button edit_material;
     @FXML
     private Button edit_supplier;
+    @FXML
+    private Button lots_button;
     @FXML
     private TableColumn<SuppliersDBProperty, String> email_col;
     @FXML
@@ -163,8 +167,8 @@ public class AdminMenuController {
     private TextField search_field;
     @FXML
     private TextField search_field_mat;
-    @FXML
-    private TextField stock_mat;
+   // @FXML
+   // private TextField stock_mat;
     @FXML
     private TableColumn<MaterialsDBProperty, Integer> stock_quant_col;
     @FXML
@@ -179,7 +183,12 @@ public class AdminMenuController {
     private TableColumn<MaterialsDBProperty, String> type_col;
     @FXML
     private TextField unit;
-
+    @FXML
+    private RadioButton each_rb;
+    @FXML
+    private RadioButton fifo_rb;
+    @FXML
+    private RadioButton mid_rb;
     @FXML
     private TableColumn<MaterialsDBProperty, String> unit_col;
     @FXML
@@ -208,6 +217,8 @@ public class AdminMenuController {
     private Tab supply_tab;
     @FXML
     private Button generate_price;
+    @FXML
+    private TextField lot_doc;
     @FXML
     private TextField mat_doc;
     @FXML
@@ -469,15 +480,17 @@ public class AdminMenuController {
         name_mat.setText("");
         number_mat.setText("");
         type_mat.setText("");
-        stock_mat.setText("");
+        //stock_mat.setText("");
         unit.setText("");
         table_materials.refresh();
         table_materials.setRowFactory(tv -> new TableRow<MaterialsDBProperty>() {
             protected void updateItem(MaterialsDBProperty item, boolean empty) {
                 super.updateItem(item, empty);
+                setStyle("");
+                pseudoClassStateChanged(little,false);
                 if (item == null )
                     setStyle("");
-                else if (item.getStock_quantity()<15) {
+                else if (item.getStock_quantity()<10) {
                     setStyle("-fx-background-color: #FFDCDC;");
                     pseudoClassStateChanged(little,true);
                 }
@@ -508,6 +521,7 @@ public class AdminMenuController {
         quant_doc.setText("");
         price_doc.setText("");
         date_doc.setValue(null);
+        lot_doc.setText("");
         search_field.setText("");
         update_suppliers_doc();
     }
@@ -711,7 +725,7 @@ public class AdminMenuController {
         number_mat.setText("");
         type_mat.setText("");
         unit.setText("");
-        stock_mat.setText("");
+        //stock_mat.setText("");
     //    HttpClient httpClient = HttpClient.newHttpClient();
         String value = type_mat_comb.getSelectionModel().getSelectedItem();
 
@@ -770,7 +784,7 @@ public class AdminMenuController {
         name_mat.setText(table_materials.getSelectionModel().getSelectedItem().getName());
         number_mat.setText(table_materials.getSelectionModel().getSelectedItem().getNumber());
         type_mat.setText(table_materials.getSelectionModel().getSelectedItem().getType());
-        stock_mat.setText(String.valueOf(table_materials.getSelectionModel().getSelectedItem().getStock_quantity()));
+      //  stock_mat.setText(String.valueOf(table_materials.getSelectionModel().getSelectedItem().getStock_quantity()));
         unit.setText(table_materials.getSelectionModel().getSelectedItem().getUnit());
     }
     @FXML
@@ -787,6 +801,7 @@ public class AdminMenuController {
         quant_doc.setText(String.valueOf(table_supplies.getSelectionModel().getSelectedItem().getQuantity()));
         price_doc.setText(String.valueOf(table_supplies.getSelectionModel().getSelectedItem().getPrice()));
         sup_doc.setValue(table_supplies.getSelectionModel().getSelectedItem().getSupplier());
+        lot_doc.setText(table_supplies.getSelectionModel().getSelectedItem().getLot());
       //  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
       //  date_doc.setValue(LocalDate.parse(table_supplies.getSelectionModel().getSelectedItem().getDate(), formatter));
 
@@ -1106,7 +1121,7 @@ public class AdminMenuController {
     @FXML
     void AddMaterialButtonOnAction(ActionEvent event) throws IOException, InterruptedException {
         if (name_mat.getText().isEmpty() || number_mat.getText().isEmpty()||type_mat.getText().isEmpty() ||
-                stock_mat.getText().isEmpty()|| unit.getText().isEmpty())
+                 unit.getText().isEmpty())
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка");
@@ -1115,13 +1130,13 @@ public class AdminMenuController {
             alert.showAndWait();
         }
         else {
-            if (!stock_mat.getText().matches("[-+]?\\d+")){
+        /*    if (!stock_mat.getText().matches("[-+]?\\d+")){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Ошибка");
                 alert.setHeaderText(null);
                 alert.setContentText("Некорректное значение поля 'Количество на складе'.");
                 alert.showAndWait();
-            }   else if(check_if_exists_material(number_mat.getText().trim())){
+            }   else*/ if(check_if_exists_material(number_mat.getText().trim())){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Ошибка");
                 alert.setHeaderText(null);
@@ -1133,7 +1148,7 @@ public class AdminMenuController {
                 materialsDB.setName(name_mat.getText().trim());
                 materialsDB.setNumber(number_mat.getText().trim());
                 materialsDB.setType(type_mat.getText().trim());
-                materialsDB.setStock_quantity(Integer.valueOf(stock_mat.getText().trim()));
+               // materialsDB.setStock_quantity(Integer.valueOf(stock_mat.getText().trim()));
                 materialsDB.setUser_login(main_login);
                 materialsDB.setUnit(unit.getText().trim());
 
@@ -1204,19 +1219,25 @@ public class AdminMenuController {
         }
         else {
             if (name_mat.getText().isEmpty() || number_mat.getText().isEmpty()||type_mat.getText().isEmpty() ||
-                    stock_mat.getText().isEmpty()|| unit.getText().isEmpty()) {
+                    unit.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Ошибка");
                 alert.setHeaderText(null);
                 alert.setContentText("Заполните все поля.");
                 alert.showAndWait();
             } else {
-                if (!stock_mat.getText().matches("[-+]?\\d+")){
+                if (!Objects.equals(number_mat.getText(), table_materials.getSelectionModel().getSelectedItem().getNumber())){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Ошибка");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Номенклатурный номер не может быть изменен.");
+                    alert.showAndWait();
+                /*(!stock_mat.getText().matches("[-+]?\\d+")){
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Ошибка");
                     alert.setHeaderText(null);
                     alert.setContentText("Некорректное начение поля 'Количество на складе'.");
-                    alert.showAndWait();
+                    alert.showAndWait();*/
                 }
                 else {
                     MaterialsDB materialsDB = new MaterialsDB();
@@ -1224,7 +1245,7 @@ public class AdminMenuController {
                     materialsDB.setName(name_mat.getText().trim());
                     materialsDB.setNumber(number_mat.getText().trim());
                     materialsDB.setType(type_mat.getText().trim());
-                    materialsDB.setStock_quantity(Integer.valueOf(stock_mat.getText().trim()));
+                    materialsDB.setStock_quantity(table_materials.getSelectionModel().getSelectedItem().getStock_quantity());
                     materialsDB.setOrder_quantity(table_materials.getSelectionModel().getSelectedItem().getOrder_quantity());
                     materialsDB.setUnit(unit.getText().trim());
                     if (!check_material_for_update(materialsDB)){
@@ -1285,7 +1306,7 @@ public class AdminMenuController {
           stage.setTitle("История изменения материалов");
           stage.setScene(new Scene(root));
           HistoryController controller = fxmlLoader.getController();
-          controller.initialize(table_materials.getSelectionModel().getSelectedItem().getId());
+          controller.initialize(table_materials.getSelectionModel().getSelectedItem().getId(), table_materials.getSelectionModel().getSelectedItem().getNumber());
           stage.initModality(Modality.APPLICATION_MODAL);
           stage.show();
         } else {
@@ -1297,7 +1318,7 @@ public class AdminMenuController {
     }
     @FXML
     void AddDocumentButtonOnAction(ActionEvent event) throws IOException, InterruptedException {
-        if (num_doc.getText().isEmpty() || mat_doc.getText().isEmpty()||quant_doc.getText().isEmpty() ||
+        if (num_doc.getText().isEmpty() || lot_doc.getText().isEmpty() || mat_doc.getText().isEmpty()||quant_doc.getText().isEmpty() ||
                 price_doc.getText().isEmpty()||date_doc.getValue()==null||sup_doc.getValue()==null)
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -1324,8 +1345,10 @@ public class AdminMenuController {
             else {
                 SupplyDocumentsDB supplyDocumentsDB = new SupplyDocumentsDB();
                 supplyDocumentsDB.setNumber(num_doc.getText().trim());
+                supplyDocumentsDB.setLot(lot_doc.getText().trim());
                 supplyDocumentsDB.setMaterial(mat_doc.getText().trim());
                 supplyDocumentsDB.setQuantity(Integer.valueOf(quant_doc.getText().trim()));
+                supplyDocumentsDB.setCurrent_stock(Integer.valueOf(quant_doc.getText().trim()));
                 supplyDocumentsDB.setPrice(Float.valueOf(price_doc.getText().trim()));
                 supplyDocumentsDB.setDate(String.valueOf(date_doc.getValue()));
                 supplyDocumentsDB.setSupplier(sup_doc.getValue());
@@ -1343,7 +1366,7 @@ public class AdminMenuController {
                     Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
                     alert3.setTitle("ОК");
                     alert3.setHeaderText(null);
-                    alert3.setContentText("Документ поставки добавлен.");
+                    alert3.setContentText("Поставка добавлена.");
                     alert3.showAndWait();
                     check_search();
                     check_search_supply_documents();
@@ -1372,7 +1395,7 @@ public class AdminMenuController {
                     Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
                     alert3.setTitle("ОК");
                     alert3.setHeaderText(null);
-                    alert3.setContentText("Документ поставки "+ number+" удалён.");
+                    alert3.setContentText("Поставка "+ number+" удалена.");
                     alert3.showAndWait();
                 }
                 check_search_supply_documents();
@@ -1395,7 +1418,7 @@ public class AdminMenuController {
             alert.showAndWait();
         }
         else {
-            if (num_doc.getText().isEmpty() || mat_doc.getText().isEmpty()||quant_doc.getText().isEmpty() ||
+            if (num_doc.getText().isEmpty() || lot_doc.getText().isEmpty() || mat_doc.getText().isEmpty()||quant_doc.getText().isEmpty() ||
                     price_doc.getText().isEmpty()||date_doc.getValue()==null||sup_doc.getValue()==null)
             {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -1430,11 +1453,14 @@ public class AdminMenuController {
                     SupplyDocumentsDB supplyDocumentsDB = new SupplyDocumentsDB();
                     supplyDocumentsDB.setId(table_supplies.getSelectionModel().getSelectedItem().getId());
                     supplyDocumentsDB.setNumber(num_doc.getText().trim());
-                    supplyDocumentsDB.setMaterial(mat_doc.getText().trim());
-                    supplyDocumentsDB.setQuantity(Integer.valueOf(quant_doc.getText().trim()));
+                    supplyDocumentsDB.setLot(lot_doc.getText().trim());
+                    supplyDocumentsDB.setMaterial(table_supplies.getSelectionModel().getSelectedItem().getMaterial());
+                    supplyDocumentsDB.setQuantity(table_supplies.getSelectionModel().getSelectedItem().getQuantity());
                     supplyDocumentsDB.setPrice(Float.valueOf(price_doc.getText().trim()));
                     supplyDocumentsDB.setDate(String.valueOf(date_doc.getValue()));
                     supplyDocumentsDB.setSupplier(sup_doc.getValue());
+                    supplyDocumentsDB.setMonth_leftovers(table_supplies.getSelectionModel().getSelectedItem().getMonth_leftovers());
+                    supplyDocumentsDB.setCurrent_stock(table_supplies.getSelectionModel().getSelectedItem().getCurrent_stock());
 
                     org.apache.http.client.HttpClient client = HttpClients.createDefault();
                     HttpPost request = new HttpPost(BASE_SUPPLY_DOCUMENTS+"/update");
@@ -1979,6 +2005,42 @@ public class AdminMenuController {
         }
     }
     @FXML
+    void AlignButtonOnAction(ActionEvent event) throws IOException, InterruptedException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Уточнение");
+        alert.setHeaderText(null);
+        alert.setContentText("Выровнять остатки на начало месяца?");
+        Optional<ButtonType> option = alert.showAndWait();
+        if (option.get() == ButtonType.OK) {
+        org.apache.http.client.HttpClient client = HttpClients.createDefault();
+        HttpPost request = new HttpPost(BASE_SUPPLY_DOCUMENTS+"/align");
+        StringEntity entity = new StringEntity("", StandardCharsets.UTF_8);
+        entity.setContentType("application/json; charset=UTF-8");
+        request.setEntity(entity);
+        org.apache.http.HttpResponse response = client.execute(request);
+
+        if(response.getStatusLine().getStatusCode()==200) {
+            Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
+            alert3.setTitle("ОК");
+            alert3.setHeaderText(null);
+            alert3.setContentText("Остатки выровнены.");
+            alert3.showAndWait();
+            check_search();
+            check_search_supply_documents();
+        }
+        else {
+            Alert alert3 = new Alert(Alert.AlertType.ERROR);
+            alert3.setTitle("Ошибка");
+            alert3.setHeaderText(null);
+            alert3.setContentText("Ошибка сервера.");
+            alert3.showAndWait();
+            check_search();
+            check_search_supply_documents();
+        }
+        check_search_supply_documents();
+        }
+    }
+    @FXML
     void ChangePasswordOnAction(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(RestClient.class.getResource("first_entrance.fxml"));
@@ -2310,5 +2372,26 @@ public class AdminMenuController {
     @FXML
     void AvgCheckPressedOnAction(ActionEvent event) {
         mat_report.setDisable(!mat_report.isDisabled());
+    }
+    @FXML
+    void LotsButtonOnAction(ActionEvent event) throws IOException, InterruptedException {
+        if (!table_materials.getSelectionModel().isEmpty()){
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(RestClient.class.getResource("lots.fxml"));
+            fxmlLoader.load();
+            Parent root = fxmlLoader.getRoot();
+            Stage stage = new Stage();
+            stage.setTitle("Партии материала " );
+            stage.setScene(new Scene(root));
+            LotsController controller = fxmlLoader.getController();
+            controller.initialize(table_materials.getSelectionModel().getSelectedItem().getId(), table_materials.getSelectionModel().getSelectedItem().getNumber());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.show();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setContentText("Выберите строку!");
+            alert.showAndWait();
+        }
     }
 }

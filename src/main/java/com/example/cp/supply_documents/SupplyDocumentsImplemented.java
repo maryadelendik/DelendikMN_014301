@@ -8,6 +8,7 @@ import com.example.cp.prices.PricesImplemented;
 import com.example.cp.production_orders.ProductionOrdersDB;
 
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -83,7 +84,8 @@ public class SupplyDocumentsImplemented implements SupplyDocuments {
 
             String sqlResponse = "SELECT * FROM warehouse.supply_documents WHERE mat_sup IN (SELECT id FROM warehouse.material_supplier\n" +
                     "WHERE supplier IN (SELECT id FROM warehouse.suppliers where name like '%"+string+"%') OR material IN\n" +
-                    "(SELECT id FROM warehouse.materials where number like '%"+string+"%')) OR date like '%"+string+"%' or number like '%"+string+"%'" ;
+                    "(SELECT id FROM warehouse.materials where number like '%"+string+"%')) OR date like '%"+string+"%' or number like '%"+string+"%' " +
+                    "or lot like '%"+string+"%'" ;
 
             ResultSet resultSet = statement.executeQuery(sqlResponse);
             supplyDocumentsDB = new ArrayList<>();
@@ -113,12 +115,46 @@ public class SupplyDocumentsImplemented implements SupplyDocuments {
                 supplyDocumentsDBs.setQuantity(resultSet.getInt("quantity"));
           //      supplyDocumentsDBs.setDate(resultSet.getString("date"));
                 supplyDocumentsDBs.setPrice(resultSet.getFloat("price"));
+                supplyDocumentsDBs.setPrice_item(resultSet.getFloat("price_item"));
+                supplyDocumentsDBs.setMonth_leftovers(resultSet.getInt("month_leftovers"));
+                supplyDocumentsDBs.setLot(resultSet.getString("lot"));
+                supplyDocumentsDBs.setCurrent_stock(resultSet.getInt("current_stock"));
                 supplyDocumentsDB.add(supplyDocumentsDBs);
             }
             supplyDocumentsDB.sort(Comparator.comparing(SupplyDocumentsDB::getId).reversed());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return supplyDocumentsDB;
+    }
+
+    @Override
+    public List<SupplyDocumentsDB> getLots(Integer id) {
+        List<SupplyDocumentsDB> supplyDocumentsDB;
+        try {
+            Statement statement = connection.createStatement();
+            String sqlResponse = "SELECT lot, current_stock FROM warehouse.supply_documents WHERE mat_sup IN " +
+                    "(SELECT id FROM warehouse.material_supplier WHERE material = "+id+") ";
+            ResultSet resultSet = statement.executeQuery(sqlResponse);
+            supplyDocumentsDB = new ArrayList<>();
+            while (resultSet.next()) {
+                SupplyDocumentsDB supplyDocumentsDBs = new SupplyDocumentsDB();
+                supplyDocumentsDBs.setId(0);
+                //supplyDocumentsDBs.setNumber(null);
+                supplyDocumentsDBs.setMat_sup(0);
+                supplyDocumentsDBs.setQuantity(0);
+                supplyDocumentsDBs.setPrice((float) 0);
+                supplyDocumentsDBs.setPrice_item((float) 0);
+                supplyDocumentsDBs.setMonth_leftovers(0);
+              //  supplyDocumentsDBs.setDate(null);
+
+                supplyDocumentsDBs.setLot(resultSet.getString("lot"));
+                supplyDocumentsDBs.setCurrent_stock(resultSet.getInt("current_stock"));
+                supplyDocumentsDB.add(supplyDocumentsDBs);
+            }
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return supplyDocumentsDB;
@@ -154,12 +190,21 @@ public class SupplyDocumentsImplemented implements SupplyDocuments {
         }
     }
 
-
+    @Override
+    public void alignLeftovers() {
+        String sqlRequest = "UPDATE supply_documents SET month_leftovers = current_stock ";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sqlRequest);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public void save(SupplyDocumentsDB supplyDocumentsDB) {
-        String sqlRequest = "INSERT INTO supply_documents (number, mat_sup, quantity, date, price) " +
-                "VALUES(?, ?, ?, ?, ?)";
+        String sqlRequest = "INSERT INTO supply_documents (number, mat_sup, quantity, date, price,lot,price_item, current_stock) " +
+                "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
         String sql = "UPDATE materials SET" +
                 " stock_quantity = stock_quantity + ?" +
                 " WHERE id = ?";
@@ -185,9 +230,14 @@ public class SupplyDocumentsImplemented implements SupplyDocuments {
                 statement.setInt(2, resultSet22.getInt(1));
             }
 
+            float price_item =supplyDocumentsDB.getPrice()/supplyDocumentsDB.getQuantity();
             statement.setInt(3, supplyDocumentsDB.getQuantity());
             statement.setString(4, supplyDocumentsDB.getDate());
             statement.setFloat(5, supplyDocumentsDB.getPrice());
+            statement.setString(6, supplyDocumentsDB.getLot());
+            statement.setFloat(7, Float.parseFloat(String.format("%.2f", price_item).replace(',', '.')));
+            statement.setInt(8, supplyDocumentsDB.getCurrent_stock());
+           // statement.setFloat(7, Float.parseFloat((new DecimalFormat("##.##").format(price_item))));
             statement.executeUpdate();
 
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -216,7 +266,8 @@ public class SupplyDocumentsImplemented implements SupplyDocuments {
     }
     @Override
     public void update(SupplyDocumentsDB supplyDocumentsDB) {
-        String sqlRequest = "UPDATE supply_documents SET number = ?, mat_sup = ?, quantity = ?, date = ?, price = ? " +
+        String sqlRequest = "UPDATE supply_documents SET number = ?, mat_sup = ?, quantity = ?, date = ?, price = ? ," +
+                "price_item = ?, month_leftovers = ?, lot = ?, current_stock = ?" +
                 " WHERE id = ?";
 
         try {
@@ -240,11 +291,15 @@ public class SupplyDocumentsImplemented implements SupplyDocuments {
             while (resultSet22.next()) {
                 statement.setInt(2, resultSet22.getInt(1));
             }
-
+            float price_item =supplyDocumentsDB.getPrice()/supplyDocumentsDB.getQuantity();
             statement.setInt(3, supplyDocumentsDB.getQuantity());
             statement.setString(4, supplyDocumentsDB.getDate());
             statement.setFloat(5, supplyDocumentsDB.getPrice());
-            statement.setInt(6, supplyDocumentsDB.getId());
+            statement.setInt(10, supplyDocumentsDB.getId());
+            statement.setFloat(6, Float.parseFloat(String.format("%.2f", price_item).replace(',', '.')));
+            statement.setInt(7, supplyDocumentsDB.getMonth_leftovers());
+            statement.setString(8, supplyDocumentsDB.getLot());
+            statement.setInt(9, supplyDocumentsDB.getCurrent_stock());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -257,9 +312,9 @@ public class SupplyDocumentsImplemented implements SupplyDocuments {
         pricesDB.setSupplier(findIdSupplier(supplyDocumentsDB.getSupplier()));
         pricesDB.setMat_name(supplyDocumentsDB.getMaterial());
         Prices prices = new PricesImplemented();
-        System.out.println(supplyDocumentsDB.getSupplier());
+    /*    System.out.println(supplyDocumentsDB.getSupplier());
         System.out.println(supplyDocumentsDB.getMaterial());
-        System.out.println(findIdSupplier(supplyDocumentsDB.getSupplier()));
+        System.out.println(findIdSupplier(supplyDocumentsDB.getSupplier()));*/
         return supplyDocumentsDB.getQuantity()*prices.getForMatSup(pricesDB);
     }
 
