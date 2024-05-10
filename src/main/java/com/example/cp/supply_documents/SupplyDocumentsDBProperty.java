@@ -18,6 +18,7 @@ public class SupplyDocumentsDBProperty {
     private final SimpleIntegerProperty month_leftovers;
     private final SimpleStringProperty lot;
     private final SimpleIntegerProperty current_stock;
+    private final SimpleIntegerProperty write_off;
 
 
     public SupplyDocumentsDBProperty(SupplyDocumentsDB supplyDocumentsDB) {
@@ -33,6 +34,19 @@ public class SupplyDocumentsDBProperty {
         month_leftovers = new SimpleIntegerProperty(supplyDocumentsDB.getMonth_leftovers());
         lot = new SimpleStringProperty(supplyDocumentsDB.getLot());
         current_stock = new SimpleIntegerProperty(supplyDocumentsDB.getCurrent_stock());
+        write_off= new SimpleIntegerProperty(supplyDocumentsDB.getWrite_off());
+    }
+
+    public int getWrite_off() {
+        return write_off.get();
+    }
+
+    public SimpleIntegerProperty write_offProperty() {
+        return write_off;
+    }
+
+    public void setWrite_off(int write_off) {
+        this.write_off.set(write_off);
     }
 
     public float getPrice_item() {

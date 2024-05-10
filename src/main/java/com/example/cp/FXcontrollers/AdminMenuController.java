@@ -789,10 +789,13 @@ public class AdminMenuController {
         unit.setText(table_materials.getSelectionModel().getSelectedItem().getUnit());
     }
     @FXML
-    void POTableMouseClicked(MouseEvent event) {
+    void POTableMouseClicked(MouseEvent event) throws ParseException {
         material_po.setText(table_po.getSelectionModel().getSelectedItem().getNumber_material());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        date_po.setValue(LocalDate.parse(table_po.getSelectionModel().getSelectedItem().getDate(), formatter));
+        SimpleDateFormat newDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat oldDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+        java.util.Date date = oldDateFormat.parse(table_po.getSelectionModel().getSelectedItem().getDate());
+        String result = newDateFormat.format(date);
+        date_po.setValue(LocalDate.parse(result));
         need_quant_po.setText(String.valueOf(table_po.getSelectionModel().getSelectedItem().getNeed_quantity()));
     }
     @FXML
@@ -1996,7 +1999,19 @@ public class AdminMenuController {
                         }
                     }
                 } else if (each_rb.isSelected()) {
-                    org.apache.http.client.HttpClient client = HttpClients.createDefault();
+                    FXMLLoader fxmlLoader = new FXMLLoader();
+                    fxmlLoader.setLocation(RestClient.class.getResource("each.fxml"));
+                    fxmlLoader.load();
+                    Parent root = fxmlLoader.getRoot();
+                    Stage stage = new Stage();
+                    stage.setTitle("Выберите количество материала из партий " );
+                    stage.setScene(new Scene(root));
+                    EachController controller = fxmlLoader.getController();
+                    controller.initialize(table_po.getSelectionModel().getSelectedItem().getMaterial(),
+                            table_po.getSelectionModel().getSelectedItem().getNeed_quantity(), table_po.getSelectionModel().getSelectedItem().getNumber_material());
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    stage.show();
+                  /*  org.apache.http.client.HttpClient client = HttpClients.createDefault();
                     HttpPost request = new HttpPost(BASE_WRITE_OFF + "/each");
                     ObjectMapper objectMapper = new ObjectMapper();
                     String jsonRequestBody = objectMapper.writeValueAsString(productionOrdersDB);
@@ -2032,6 +2047,8 @@ public class AdminMenuController {
                             check_search_supply_documents();
                         }
                     }
+
+                   */
                 } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Ошибка");

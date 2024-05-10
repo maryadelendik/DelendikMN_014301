@@ -136,7 +136,7 @@ public class SupplyDocumentsImplemented implements SupplyDocuments {
         try {
             Statement statement = connection.createStatement();
             String sqlResponse = "SELECT lot, current_stock FROM warehouse.supply_documents WHERE mat_sup IN " +
-                    "(SELECT id FROM warehouse.material_supplier WHERE material = "+id+") ";
+                    "(SELECT id FROM warehouse.material_supplier WHERE material = "+id+") AND current_stock > 0";
             ResultSet resultSet = statement.executeQuery(sqlResponse);
             supplyDocumentsDB = new ArrayList<>();
             while (resultSet.next()) {

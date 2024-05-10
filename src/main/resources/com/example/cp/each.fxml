@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #ffffff;" stylesheets="@../../../static/style.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cp.FXcontrollers.EachController">
+   <children>
+      <TableView fx:id="table" editable="true" layoutX="28.0" layoutY="69.0" prefHeight="606.0" prefWidth="690.0">
+        <columns>
+            <TableColumn fx:id="lot_column" prefWidth="230.0" text="Партия" />
+            <TableColumn fx:id="quantity_column" editable="false" prefWidth="230.0" text="Доступное количество" />
+            <TableColumn fx:id="write_off_column" prefWidth="230.0" text="Количество списания" />
+        </columns>
+      </TableView>
+      <Label fx:id="material_label" alignment="CENTER" contentDisplay="CENTER" layoutX="728.0" layoutY="65.0" prefHeight="49.0" prefWidth="262.0" wrapText="true">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Button fx:id="write_off" layoutX="748.0" layoutY="635.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="222.0" text="Списать" textFill="WHITE">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Label layoutX="28.0" layoutY="25.0" prefHeight="40.0" prefWidth="574.0" text="Укажите количество материала для списания из каждой партии:" wrapText="true">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="748.0" layoutY="499.0" prefHeight="40.0" prefWidth="222.0" text="Общее количество списываемого материала" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="number" alignment="CENTER" layoutX="784.0" layoutY="557.0" prefHeight="23.0" prefWidth="149.0" text="hh" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

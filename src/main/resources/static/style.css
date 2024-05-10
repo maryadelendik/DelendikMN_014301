@@ -223,6 +223,7 @@
     -fx-text-fill: black;
    /* -fx-border-color: transparent #ABB2B9 #ABB2B9 #ABB2B9, transparent;*/
 }
+
 .table-row-cell:empty {
     -fx-background-color: transparent;
 }
@@ -267,6 +268,15 @@
     -fx-background-radius: 0.0;
     -fx-table-cell-border-color: #EAECEE;
   /*  -fx-border-color: transparent #ABB2B9 #ABB2B9 #ABB2B9, transparent;*/
+}
+.table-row-cell:selected .text {
+    -fx-fill: white;
+}
+.text-field-table-cell .text-field {
+    -fx-padding: 0;
+    -fx-font-size: 14 px;
+    -fx-text-fill: white;
+    -fx-background-color:#2C3E50;
 }
 /*.table-row-cell:filled:selected:hover {
     -fx-text-fill: black;

@@ -1,6 +1,7 @@
 package com.example.cp.supply_documents;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class SupplyDocumentsDB implements Serializable {
     private Integer id;
@@ -15,11 +16,10 @@ public class SupplyDocumentsDB implements Serializable {
     private Integer month_leftovers;
     private String lot;
     private Integer current_stock;
+    private Integer write_off;
 
 
-
-    public SupplyDocumentsDB(Integer id, Integer mat_sup, String number, String material, String supplier, Integer quantity, String date, Float price,
-                             Float price_item,Integer month_leftovers,String lot,Integer current_stock) {
+    public SupplyDocumentsDB(Integer id, Integer mat_sup, String number, String material, String supplier, Integer quantity, String date, Float price, Float price_item, Integer month_leftovers, String lot, Integer current_stock, Integer write_off) {
         this.id = id;
         this.mat_sup = mat_sup;
         this.number = number;
@@ -32,10 +32,23 @@ public class SupplyDocumentsDB implements Serializable {
         this.month_leftovers = month_leftovers;
         this.lot = lot;
         this.current_stock = current_stock;
+        this.write_off = write_off;
     }
 
     public SupplyDocumentsDB() {
 
+    }
+
+    public Integer getWrite_off() {
+        return Objects.requireNonNullElse(write_off, 0);
+    }
+
+    public void setWrite_off(Integer write_off) {
+        if (write_off == null){
+            this.write_off = 0;
+        } else {
+            this.write_off = write_off;
+        }
     }
 
     public Float getPrice_item() {

@@ -153,9 +153,6 @@ public class WriteOffImplemented implements WriteOff {
         }*/
     }
 
-
-
-
     @Override
     public void save(WriteOffDB writeOffDB) {
         String sqlRequest = "INSERT INTO write_off (lot_material, quantity, production_order, date, price_item, total_price, type) " +
@@ -337,6 +334,47 @@ public class WriteOffImplemented implements WriteOff {
             throw new RuntimeException(e);
         }
     }
+    public void each (ProductionOrdersDB productionOrdersDB){
+        Integer stock_quantity = null, need = productionOrdersDB.getNeed_quantity();
+        Float price_item = get_mid_price(productionOrdersDB.getMaterial());
+        String find_supplies ="SELECT * FROM warehouse.supply_documents WHERE mat_sup IN (SELECT id " +
+                "FROM warehouse.material_supplier WHERE material = "+ productionOrdersDB.getMaterial() +" ) AND " +
+                "current_stock > 0 ORDER BY date";
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(find_supplies);
+            while (resultSet.next() && need > 0) {
+                stock_quantity = resultSet.getInt(10);
+                if(stock_quantity<need){
+                    WriteOffDB writeOffDB = new WriteOffDB();
+                    writeOffDB.setLot_material(resultSet.getInt(1));
+                    writeOffDB.setQuantity(stock_quantity);
+                    writeOffDB.setProduction_order(productionOrdersDB.getId());
+                    writeOffDB.setDate(String.valueOf(currentDate));
+                    writeOffDB.setPrice_item(price_item);
+                    writeOffDB.setTotal_price(Float.parseFloat(String.format("%.2f", price_item*stock_quantity).replace(',', '.')));
+                    writeOffDB.setType("По средней себестоимости");
+                    save(writeOffDB);
+                    update_supply_document(resultSet.getInt(1),stock_quantity);
+                    need -= stock_quantity;
+                } else {
+                    WriteOffDB writeOffDB = new WriteOffDB();
+                    writeOffDB.setLot_material(resultSet.getInt(1));
+                    writeOffDB.setQuantity(need);
+                    writeOffDB.setProduction_order(productionOrdersDB.getId());
+                    writeOffDB.setDate(String.valueOf(currentDate));
+                    writeOffDB.setPrice_item(price_item);
+                    writeOffDB.setTotal_price(Float.parseFloat(String.format("%.2f", price_item*need).replace(',', '.')));
+                    writeOffDB.setType("По средней себестоимости");
+                    save(writeOffDB);
+                    update_supply_document(resultSet.getInt(1),need);
+                    need -= stock_quantity;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public Float get_mid_price (Integer id){
         Float price = null;
         String month = "SELECT SUM(price), SUM(quantity) FROM warehouse.supply_documents " +
@@ -408,7 +446,7 @@ public class WriteOffImplemented implements WriteOff {
         } else if (type == 2) {
             mid(productionOrdersDB);
         } else if (type == 3) {
-          //  each(productionOrdersDB);
+            each(productionOrdersDB);
         }
     }
     @Override
