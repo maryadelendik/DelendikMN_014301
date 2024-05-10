@@ -13,6 +13,7 @@ public interface ProductionOrders {
     void update(ProductionOrdersDB productionOrdersDB);
     void reject(ProductionOrdersDB productionOrdersDB);
     Integer writeOff(ProductionOrdersDB productionOrdersDB);
+
     ArrayList<Report> consumptionReport(SearchProductionOrders searchProductionOrders);
     ArrayList<Report> qualityReport(SearchProductionOrders searchProductionOrders);
     ArrayList<Report> suppliersReport(ProductionOrdersDB productionOrdersDB);

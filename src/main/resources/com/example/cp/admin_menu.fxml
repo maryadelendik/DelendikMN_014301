@@ -397,7 +397,7 @@
                               <ToggleGroup fx:id="write_off" />
                            </toggleGroup>
                            <font>
-                              <Font size="13.0" />
+                              <Font size="12.5" />
                            </font>
                         </RadioButton>
                         <RadioButton fx:id="mid_rb" layoutX="1214.0" layoutY="521.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="270.0" text="По средней себестоимости" toggleGroup="$write_off">

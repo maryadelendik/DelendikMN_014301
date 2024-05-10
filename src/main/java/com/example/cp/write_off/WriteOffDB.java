@@ -10,8 +10,9 @@ public class WriteOffDB implements Serializable {
     private String date;
     private Float total_price;
     private Float price_item;
+    private String type;
 
-    public WriteOffDB(Integer id, Integer lot_material, Integer quantity, Integer production_order, String date, Float total_price, Float price_item) {
+    public WriteOffDB(Integer id, Integer lot_material, Integer quantity, Integer production_order, String date, Float total_price, Float price_item, String type) {
         this.id = id;
         this.lot_material = lot_material;
         this.quantity = quantity;
@@ -19,10 +20,19 @@ public class WriteOffDB implements Serializable {
         this.date = date;
         this.total_price = total_price;
         this.price_item = price_item;
+        this.type = type;
     }
 
     public WriteOffDB() {
 
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Integer getId() {
@@ -91,6 +101,7 @@ public class WriteOffDB implements Serializable {
                 ", date='" + date + '\'' +
                 ", total_price=" + total_price +
                 ", price_item=" + price_item +
+                ", type='" + type + '\'' +
                 '}';
     }
 }

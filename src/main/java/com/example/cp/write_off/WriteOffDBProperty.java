@@ -13,6 +13,7 @@ public class WriteOffDBProperty {
     private final SimpleStringProperty date;
     private final SimpleFloatProperty price_item;
     private final SimpleFloatProperty total_price;
+    private final SimpleStringProperty type;
 
 
     public WriteOffDBProperty(WriteOffDB writeOffDB) {
@@ -23,6 +24,19 @@ public class WriteOffDBProperty {
         date = new SimpleStringProperty(writeOffDB.getDate());
         price_item = new SimpleFloatProperty(writeOffDB.getPrice_item());
         production_order = new SimpleIntegerProperty(writeOffDB.getProduction_order());
+        type = new SimpleStringProperty(writeOffDB.getType());
+    }
+
+    public String getType() {
+        return type.get();
+    }
+
+    public SimpleStringProperty typeProperty() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type.set(type);
     }
 
     public int getId() {

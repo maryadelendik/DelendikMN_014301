@@ -288,6 +288,7 @@ public class ProductionOrdersImplemented implements ProductionOrders {
         return 1;
     }
 
+
     @Override
     public void backWriteOff(ProductionOrdersDB productionOrdersDB) {
         Integer stock_quantity = null, order_quantity = null;

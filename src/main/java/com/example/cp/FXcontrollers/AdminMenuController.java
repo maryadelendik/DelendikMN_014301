@@ -329,6 +329,7 @@ public class AdminMenuController {
     private static final String BASE_USER = "http://localhost:8080/user";
     private static final String BASE_HISTORY = "http://localhost:8080/history";
     private static final String BASE_REPORT = "http://localhost:8080/report";
+    private static final String BASE_WRITE_OFF = "http://localhost:8080/write_off";
     private PseudoClass open = PseudoClass.getPseudoClass("open");
     private PseudoClass closed = PseudoClass.getPseudoClass("closed");
     private PseudoClass reject = PseudoClass.getPseudoClass("reject");
@@ -1906,7 +1907,148 @@ public class AdminMenuController {
     }
     @FXML
     void WriteOffButtonOnAction(ActionEvent event) throws IOException, InterruptedException {
-        if (!table_po.getSelectionModel().isEmpty()){
+        if (!table_po.getSelectionModel().isEmpty()) {
+            if (table_po.getSelectionModel().getSelectedItem().isStatus()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Ошибка");
+                alert.setHeaderText(null);
+                alert.setContentText("Заказ закрыт. Списание невозможно.");
+                alert.showAndWait();
+            } else {
+                ProductionOrdersDB productionOrdersDB = new ProductionOrdersDB();
+                productionOrdersDB.setId(table_po.getSelectionModel().getSelectedItem().getId());
+                productionOrdersDB.setNeed_quantity(table_po.getSelectionModel().getSelectedItem().getNeed_quantity());
+                productionOrdersDB.setNumber_material(table_po.getSelectionModel().getSelectedItem().getNumber_material());
+                productionOrdersDB.setMaterial(table_po.getSelectionModel().getSelectedItem().getMaterial());
+                productionOrdersDB.setDate(table_po.getSelectionModel().getSelectedItem().getDate());
+                if (fifo_rb.isSelected()) {
+                    org.apache.http.client.HttpClient client = HttpClients.createDefault();
+                    HttpPost request = new HttpPost(BASE_WRITE_OFF + "/fifo");
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    String jsonRequestBody = objectMapper.writeValueAsString(productionOrdersDB);
+                    StringEntity entity = new StringEntity(jsonRequestBody, StandardCharsets.UTF_8);
+                    entity.setContentType("application/json; charset=UTF-8");
+                    request.setEntity(entity);
+                    org.apache.http.HttpResponse response = client.execute(request);
+                    String responseBody = EntityUtils.toString(response.getEntity());
+                    Integer enough = objectMapper.readValue(responseBody, Integer.class);
+
+                    if (response.getStatusLine().getStatusCode() == 200) {
+                        if (enough == 0) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Ошибка");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Недостаточно материала на складе. Списание невозможно.");
+                            alert.showAndWait();
+                        } else {
+                            Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
+                            alert3.setTitle("ОК");
+                            alert3.setHeaderText(null);
+                            alert3.setContentText("Материал списан со склада.");
+                            alert3.showAndWait();
+                            if (enough == 2) {
+                                Alert alert4 = new Alert(Alert.AlertType.INFORMATION);
+                                alert4.setTitle("ВНИМАНИЕ");
+                                alert4.setHeaderText(null);
+                                alert4.setContentText("На складе осталось меньше 10 единиц материала.");
+                                alert4.showAndWait();
+                            }
+                            search_productionOrders(null);
+                            check_search();
+                            check_search_supply_documents();
+                        }
+                    }
+                } else if (mid_rb.isSelected()) {
+                    org.apache.http.client.HttpClient client = HttpClients.createDefault();
+                    HttpPost request = new HttpPost(BASE_WRITE_OFF + "/mid");
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    String jsonRequestBody = objectMapper.writeValueAsString(productionOrdersDB);
+                    StringEntity entity = new StringEntity(jsonRequestBody, StandardCharsets.UTF_8);
+                    entity.setContentType("application/json; charset=UTF-8");
+                    request.setEntity(entity);
+                    org.apache.http.HttpResponse response = client.execute(request);
+                    String responseBody = EntityUtils.toString(response.getEntity());
+                    Integer enough = objectMapper.readValue(responseBody, Integer.class);
+
+                    if (response.getStatusLine().getStatusCode() == 200) {
+                        if (enough == 0) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Ошибка");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Недостаточно материала на складе. Списание невозможно.");
+                            alert.showAndWait();
+                        } else {
+                            Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
+                            alert3.setTitle("ОК");
+                            alert3.setHeaderText(null);
+                            alert3.setContentText("Материал списан со склада.");
+                            alert3.showAndWait();
+                            if (enough == 2) {
+                                Alert alert4 = new Alert(Alert.AlertType.INFORMATION);
+                                alert4.setTitle("ВНИМАНИЕ");
+                                alert4.setHeaderText(null);
+                                alert4.setContentText("На складе осталось меньше 10 единиц материала.");
+                                alert4.showAndWait();
+                            }
+                            search_productionOrders(null);
+                            check_search();
+                            check_search_supply_documents();
+                        }
+                    }
+                } else if (each_rb.isSelected()) {
+                    org.apache.http.client.HttpClient client = HttpClients.createDefault();
+                    HttpPost request = new HttpPost(BASE_WRITE_OFF + "/each");
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    String jsonRequestBody = objectMapper.writeValueAsString(productionOrdersDB);
+                    StringEntity entity = new StringEntity(jsonRequestBody, StandardCharsets.UTF_8);
+                    entity.setContentType("application/json; charset=UTF-8");
+                    request.setEntity(entity);
+                    org.apache.http.HttpResponse response = client.execute(request);
+                    String responseBody = EntityUtils.toString(response.getEntity());
+                    Integer enough = objectMapper.readValue(responseBody, Integer.class);
+
+                    if (response.getStatusLine().getStatusCode() == 200) {
+                        if (enough == 0) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Ошибка");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Недостаточно материала на складе. Списание невозможно.");
+                            alert.showAndWait();
+                        } else {
+                            Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
+                            alert3.setTitle("ОК");
+                            alert3.setHeaderText(null);
+                            alert3.setContentText("Материал списан со склада.");
+                            alert3.showAndWait();
+                            if (enough == 2) {
+                                Alert alert4 = new Alert(Alert.AlertType.INFORMATION);
+                                alert4.setTitle("ВНИМАНИЕ");
+                                alert4.setHeaderText(null);
+                                alert4.setContentText("На складе осталось меньше 10 единиц материала.");
+                                alert4.showAndWait();
+                            }
+                            search_productionOrders(null);
+                            check_search();
+                            check_search_supply_documents();
+                        }
+                    }
+                } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Ошибка");
+                alert.setHeaderText(null);
+                alert.setContentText("Выберите вариант списания");
+                alert.showAndWait();
+            }
+            }
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setContentText("Выберите строку!");
+            alert.showAndWait();
+        }
+
+       /* if (!table_po.getSelectionModel().isEmpty()){
             if (table_po.getSelectionModel().getSelectedItem().isStatus()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Ошибка");
@@ -1961,7 +2103,7 @@ public class AdminMenuController {
             alert.setHeaderText(null);
             alert.setContentText("Выберите строку!");
             alert.showAndWait();
-        }
+        }*/
     }
     @FXML
     void BackWriteButtonOnAction(ActionEvent event) throws IOException, InterruptedException {
