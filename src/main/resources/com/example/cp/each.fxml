@@ -13,7 +13,7 @@
         <columns>
             <TableColumn fx:id="lot_column" prefWidth="230.0" text="Партия" />
             <TableColumn fx:id="quantity_column" editable="false" prefWidth="230.0" text="Доступное количество" />
-            <TableColumn fx:id="write_off_column" prefWidth="230.0" text="Количество списания" />
+            <TableColumn fx:id="write_off_column" prefWidth="227.20001831054685" text="Количество списания" />
         </columns>
       </TableView>
       <Label fx:id="material_label" alignment="CENTER" contentDisplay="CENTER" layoutX="728.0" layoutY="65.0" prefHeight="49.0" prefWidth="262.0" wrapText="true">
@@ -21,7 +21,7 @@
             <Font size="20.0" />
          </font>
       </Label>
-      <Button fx:id="write_off" layoutX="748.0" layoutY="635.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="222.0" text="Списать" textFill="WHITE">
+      <Button fx:id="write_off" layoutX="748.0" layoutY="635.0" mnemonicParsing="false" onAction="#WriteOffButtonOnAction" prefHeight="40.0" prefWidth="222.0" text="Списать" textFill="WHITE">
          <font>
             <Font size="16.0" />
          </font>

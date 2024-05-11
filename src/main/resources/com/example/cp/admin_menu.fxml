@@ -259,6 +259,7 @@
                               <TableColumn fx:id="date_doc_col" prefWidth="115.0" text="Дата" />
                               <TableColumn fx:id="month_leftovers_col" prefWidth="210.0" text="Остаток на начало месяца" />
                               <TableColumn fx:id="current_stock_col" prefWidth="150.0" text="Текущее кол-во" />
+                              <TableColumn fx:id="rej_sup_col" prefWidth="150.0" text="Брак" />
                            </columns>
                         </TableView>
                         <Button fx:id="delete_document" layoutX="23.0" layoutY="712.0" mnemonicParsing="false" onAction="#DeleteDocumentButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Удалить" textFill="WHITE">
@@ -356,11 +357,6 @@
                               <Font size="16.0" />
                            </font>
                         </TextField>
-                        <TextField fx:id="reject_po" layoutX="873.0" layoutY="713.0" prefHeight="38.0" prefWidth="195.0" promptText="Брак">
-                           <font>
-                              <Font size="16.0" />
-                           </font>
-                        </TextField>
                         <Button fx:id="add_po" layoutX="1249.0" layoutY="244.0" mnemonicParsing="false" onAction="#AddProductionOrderButtonOnAction" prefHeight="40.0" prefWidth="200.0" text="Добавить" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
@@ -371,7 +367,7 @@
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="add_reject" layoutX="1082.0" layoutY="712.0" mnemonicParsing="false" onAction="#AddRejectedMaterialButtonOnAction" prefHeight="40.0" prefWidth="90.0" text="Внести" textFill="WHITE">
+                        <Button fx:id="add_reject" layoutX="1214.0" layoutY="712.0" mnemonicParsing="false" onAction="#AddRejectedMaterialButtonOnAction" prefHeight="40.0" prefWidth="270.0" text="Бракованные позиции" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>

@@ -14,6 +14,8 @@ public class WriteOffDBProperty {
     private final SimpleFloatProperty price_item;
     private final SimpleFloatProperty total_price;
     private final SimpleStringProperty type;
+    private final SimpleStringProperty lot;
+    private final SimpleIntegerProperty reject;
 
 
     public WriteOffDBProperty(WriteOffDB writeOffDB) {
@@ -25,6 +27,32 @@ public class WriteOffDBProperty {
         price_item = new SimpleFloatProperty(writeOffDB.getPrice_item());
         production_order = new SimpleIntegerProperty(writeOffDB.getProduction_order());
         type = new SimpleStringProperty(writeOffDB.getType());
+        lot = new SimpleStringProperty(writeOffDB.getLot());
+        reject = new SimpleIntegerProperty(writeOffDB.getReject());
+    }
+
+    public String getLot() {
+        return lot.get();
+    }
+
+    public SimpleStringProperty lotProperty() {
+        return lot;
+    }
+
+    public void setLot(String lot) {
+        this.lot.set(lot);
+    }
+
+    public int getReject() {
+        return reject.get();
+    }
+
+    public SimpleIntegerProperty rejectProperty() {
+        return reject;
+    }
+
+    public void setReject(int reject) {
+        this.reject.set(reject);
     }
 
     public String getType() {

@@ -19,7 +19,8 @@ public class SupplyDocumentsDBProperty {
     private final SimpleStringProperty lot;
     private final SimpleIntegerProperty current_stock;
     private final SimpleIntegerProperty write_off;
-
+    private final SimpleIntegerProperty prod_order;
+    private final SimpleIntegerProperty rejected;
 
     public SupplyDocumentsDBProperty(SupplyDocumentsDB supplyDocumentsDB) {
         id = new SimpleIntegerProperty(supplyDocumentsDB.getId());
@@ -35,6 +36,32 @@ public class SupplyDocumentsDBProperty {
         lot = new SimpleStringProperty(supplyDocumentsDB.getLot());
         current_stock = new SimpleIntegerProperty(supplyDocumentsDB.getCurrent_stock());
         write_off= new SimpleIntegerProperty(supplyDocumentsDB.getWrite_off());
+        prod_order= new SimpleIntegerProperty(supplyDocumentsDB.getProd_order());
+        rejected= new SimpleIntegerProperty(supplyDocumentsDB.getRejected());
+    }
+
+    public int getRejected() {
+        return rejected.get();
+    }
+
+    public SimpleIntegerProperty rejectedProperty() {
+        return rejected;
+    }
+
+    public void setRejected(int rejected) {
+        this.rejected.set(rejected);
+    }
+
+    public int getProd_order() {
+        return prod_order.get();
+    }
+
+    public SimpleIntegerProperty prod_orderProperty() {
+        return prod_order;
+    }
+
+    public void setProd_order(int prod_order) {
+        this.prod_order.set(prod_order);
     }
 
     public int getWrite_off() {

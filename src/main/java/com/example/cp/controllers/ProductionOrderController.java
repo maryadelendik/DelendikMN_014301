@@ -63,18 +63,4 @@ public class ProductionOrderController {
         ProductionOrders productionOrders = new ProductionOrdersImplemented();
         return new ResponseEntity<>(productionOrders.writeOff(productionOrdersDB), HttpStatus.OK);
     }
-    @PostMapping ("/back_write_off")
-    public ResponseEntity<Integer> backWriteOff(@RequestBody ProductionOrdersDB productionOrdersDB) {
-        System.out.println("Выполняется отмена списания материала...");
-        ProductionOrders productionOrders = new ProductionOrdersImplemented();
-        productionOrders.backWriteOff(productionOrdersDB);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-    @PostMapping ("/add_rejected")
-    public ResponseEntity<Integer> addRejected(@RequestBody ProductionOrdersDB productionOrdersDB) {
-        System.out.println("Выполняется обновление бракованного материала...");
-        ProductionOrders productionOrders = new ProductionOrdersImplemented();
-        productionOrders.reject(productionOrdersDB);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 }

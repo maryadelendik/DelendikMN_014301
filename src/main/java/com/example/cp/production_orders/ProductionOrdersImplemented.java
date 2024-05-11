@@ -29,6 +29,13 @@ public class ProductionOrdersImplemented implements ProductionOrders {
 
             while (resultSet.next()) {
                 ProductionOrdersDB productionOrdersDBs = new ProductionOrdersDB();
+
+                String sql ="SELECT SUM(reject) FROM warehouse.write_off WHERE production_order = " +resultSet.getInt("id");
+                Statement statement2 = connection.createStatement();
+                ResultSet resultSet2 = statement2.executeQuery(sql);
+                while (resultSet2.next()) {
+                    productionOrdersDBs.setReject_quantity(resultSet2.getInt(1));
+                }
                 productionOrdersDBs.setId(resultSet.getInt("id"));
                 productionOrdersDBs.setMaterial(resultSet.getInt("material"));
                 productionOrdersDBs.setNumber_material(findNumberMaterial(resultSet.getInt("material")));
@@ -37,9 +44,7 @@ public class ProductionOrdersImplemented implements ProductionOrders {
                 java.util.Date date = oldDateFormat.parse(resultSet.getString("date"));
                 String result = newDateFormat.format(date);
                 productionOrdersDBs.setDate(result);
-               // productionOrdersDBs.setDate(resultSet.getString("date"));
                 productionOrdersDBs.setNeed_quantity(resultSet.getInt("need_quantity"));
-                productionOrdersDBs.setReject_quantity(resultSet.getInt("reject_quantity"));
                 productionOrdersDBs.setStatus(resultSet.getBoolean("status"));
                 productionOrdersDB.add(productionOrdersDBs);
             }
@@ -222,21 +227,8 @@ public class ProductionOrdersImplemented implements ProductionOrders {
             throw new RuntimeException(e);
         }
     }
-    @Override
-    public void reject(ProductionOrdersDB productionOrdersDB) {
-        String sql = "UPDATE production_orders SET" +
-                " reject_quantity = reject_quantity +?" +
-                " WHERE id = ?";
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, productionOrdersDB.getReject_quantity());
-            preparedStatement.setInt(2, productionOrdersDB.getId());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    //Алгоритм списания материала со склада
+
+
     @Override
     public Integer writeOff(ProductionOrdersDB productionOrdersDB) {
         Integer stock_quantity = null, order_quantity = null;
@@ -286,42 +278,6 @@ public class ProductionOrdersImplemented implements ProductionOrders {
             throw new RuntimeException(e);
         }
         return 1;
-    }
-
-
-    @Override
-    public void backWriteOff(ProductionOrdersDB productionOrdersDB) {
-        Integer stock_quantity = null, order_quantity = null;
-        String sql = "UPDATE production_orders SET" +
-                " status = ?, reject_quantity = ?" +
-                " WHERE id = ?";
-        String back_write_off = "UPDATE materials SET" +
-                " stock_quantity = ?," +
-                " order_quantity = ?" +
-                " WHERE id = ?";
-        try {
-            Statement statement = connection.createStatement();
-            String sqlResponse = "SELECT stock_quantity, order_quantity FROM materials WHERE id='"+productionOrdersDB.getMaterial()+"'" ;
-            ResultSet resultSet = statement.executeQuery(sqlResponse);
-            while (resultSet.next()) {
-                stock_quantity = resultSet.getInt(1);
-                order_quantity = resultSet.getInt(2);
-            }
-                PreparedStatement preparedStatement2 = connection.prepareStatement(back_write_off);
-                preparedStatement2.setInt(1, stock_quantity+productionOrdersDB.getNeed_quantity());
-                preparedStatement2.setInt(2, order_quantity+productionOrdersDB.getNeed_quantity());
-                preparedStatement2.setInt(3, productionOrdersDB.getMaterial());
-                preparedStatement2.executeUpdate();
-
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                preparedStatement.setBoolean(1, false);
-                preparedStatement.setInt(2, 0);
-                preparedStatement.setInt(3, productionOrdersDB.getId());
-                preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

@@ -66,7 +66,14 @@ public class SupplyDocumentsImplemented implements SupplyDocuments {
                 supplyDocumentsDBs.setMonth_leftovers(resultSet.getInt("month_leftovers"));
                 supplyDocumentsDBs.setLot(resultSet.getString("lot"));
                 supplyDocumentsDBs.setCurrent_stock(resultSet.getInt("current_stock"));
-                supplyDocumentsDB.add(supplyDocumentsDBs);
+
+                String sql ="SELECT SUM(reject) FROM warehouse.write_off WHERE lot_material = " + resultSet.getInt("id");
+                Statement statement3 = connection.createStatement();
+                ResultSet resultSet3 = statement3.executeQuery(sql);
+                while (resultSet3.next()) {
+                    supplyDocumentsDBs.setRejected(resultSet3.getInt(1));
+                }
+               supplyDocumentsDB.add(supplyDocumentsDBs);
             }
             supplyDocumentsDB.sort(Comparator.comparing(SupplyDocumentsDB::getId).reversed());
         } catch (SQLException | ParseException e) {
@@ -135,13 +142,13 @@ public class SupplyDocumentsImplemented implements SupplyDocuments {
         List<SupplyDocumentsDB> supplyDocumentsDB;
         try {
             Statement statement = connection.createStatement();
-            String sqlResponse = "SELECT lot, current_stock FROM warehouse.supply_documents WHERE mat_sup IN " +
+            String sqlResponse = "SELECT id, lot, current_stock FROM warehouse.supply_documents WHERE mat_sup IN " +
                     "(SELECT id FROM warehouse.material_supplier WHERE material = "+id+") AND current_stock > 0";
             ResultSet resultSet = statement.executeQuery(sqlResponse);
             supplyDocumentsDB = new ArrayList<>();
             while (resultSet.next()) {
                 SupplyDocumentsDB supplyDocumentsDBs = new SupplyDocumentsDB();
-                supplyDocumentsDBs.setId(0);
+                supplyDocumentsDBs.setId(resultSet.getInt("id"));
                 //supplyDocumentsDBs.setNumber(null);
                 supplyDocumentsDBs.setMat_sup(0);
                 supplyDocumentsDBs.setQuantity(0);

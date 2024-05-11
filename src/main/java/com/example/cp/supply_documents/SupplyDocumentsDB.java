@@ -17,9 +17,11 @@ public class SupplyDocumentsDB implements Serializable {
     private String lot;
     private Integer current_stock;
     private Integer write_off;
+    private Integer prod_order;
+    private Integer rejected;
 
 
-    public SupplyDocumentsDB(Integer id, Integer mat_sup, String number, String material, String supplier, Integer quantity, String date, Float price, Float price_item, Integer month_leftovers, String lot, Integer current_stock, Integer write_off) {
+    public SupplyDocumentsDB(Integer id, Integer mat_sup, String number, String material, String supplier, Integer quantity, String date, Float price, Float price_item, Integer month_leftovers, String lot, Integer current_stock, Integer write_off, Integer prod_order, Integer rejected) {
         this.id = id;
         this.mat_sup = mat_sup;
         this.number = number;
@@ -33,10 +35,28 @@ public class SupplyDocumentsDB implements Serializable {
         this.lot = lot;
         this.current_stock = current_stock;
         this.write_off = write_off;
+        this.prod_order = prod_order;
+        this.rejected = rejected;
     }
 
     public SupplyDocumentsDB() {
 
+    }
+
+    public Integer getRejected() {
+        return rejected;
+    }
+
+    public void setRejected(Integer rejected) {
+        this.rejected = rejected;
+    }
+
+    public Integer getProd_order() {
+        return Objects.requireNonNullElse(prod_order, 0);
+    }
+
+    public void setProd_order(Integer prod_order) {
+        this.prod_order = Objects.requireNonNullElse(prod_order, 0);
     }
 
     public Integer getWrite_off() {
@@ -44,11 +64,7 @@ public class SupplyDocumentsDB implements Serializable {
     }
 
     public void setWrite_off(Integer write_off) {
-        if (write_off == null){
-            this.write_off = 0;
-        } else {
-            this.write_off = write_off;
-        }
+        this.write_off = Objects.requireNonNullElse(write_off, 0);
     }
 
     public Float getPrice_item() {
@@ -162,6 +178,9 @@ public class SupplyDocumentsDB implements Serializable {
                 ", month_leftovers=" + month_leftovers +
                 ", lot='" + lot + '\'' +
                 ", current_stock=" + current_stock +
+                ", write_off=" + write_off +
+                ", prod_order=" + prod_order +
+                ", rejected=" + rejected +
                 '}';
     }
 }

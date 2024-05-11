@@ -6,6 +6,7 @@ import com.example.cp.prices.Prices;
 import com.example.cp.prices.PricesDB;
 import com.example.cp.prices.PricesImplemented;
 import com.example.cp.production_orders.ProductionOrdersDB;
+import com.example.cp.supply_documents.SupplyDocumentsDB;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import java.sql.*;
@@ -123,34 +124,121 @@ public class WriteOffImplemented implements WriteOff {
         return null;
     }
 
-    @Override
-    public void deleteById(Integer id) {/*
-        String get_material = "SELECT MS.material, D.quantity FROM warehouse.supply_documents D " +
-                "INNER JOIN warehouse.material_supplier MS ON MS.id=D.mat_sup " +
-                "WHERE D.id=" + id;
-
+    public String get_lot_name (Integer id){
+       String name = null;
         try {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(get_material);
+            String sqlResponse = "SELECT lot FROM warehouse.supply_documents WHERE id ='"+id+"'" ;
+            ResultSet resultSet = statement.executeQuery(sqlResponse);
             while (resultSet.next()) {
-                    String reduce_order_quantity = "UPDATE materials SET stock_quantity = stock_quantity - " + resultSet.getInt(2)+
-                            " WHERE id = " + resultSet.getInt(1);
-                    PreparedStatement preparedStatement = connection.prepareStatement(reduce_order_quantity);
-                    preparedStatement.executeUpdate();
+                name = resultSet.getString(1);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return name;
+    }
+    @Override
+    public List<WriteOffDB> getLots(Integer id) {
+        List<WriteOffDB> writeOffDB;
+        try {
+            Statement statement = connection.createStatement();
+            String sqlResponse = "SELECT * FROM warehouse.write_off WHERE production_order = "+id;
+            ResultSet resultSet = statement.executeQuery(sqlResponse);
+            writeOffDB = new ArrayList<>();
+            while (resultSet.next()) {
+                WriteOffDB writeOffDBS = new WriteOffDB();
+                writeOffDBS.setId(resultSet.getInt("id"));
+                writeOffDBS.setLot_material(resultSet.getInt("lot_material"));
+                writeOffDBS.setQuantity(resultSet.getInt("quantity"));
+                writeOffDBS.setProduction_order(resultSet.getInt("production_order"));
+                writeOffDBS.setDate(resultSet.getString("date"));
+                writeOffDBS.setPrice_item(resultSet.getFloat("price_item"));
+                writeOffDBS.setTotal_price(resultSet.getFloat("total_price"));
+                writeOffDBS.setReject(resultSet.getInt("reject"));
+                writeOffDBS.setType(resultSet.getString("type"));
+                writeOffDBS.setLot(get_lot_name(resultSet.getInt("lot_material")));
+                writeOffDB.add(writeOffDBS);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return writeOffDB;
+    }
 
-        String sql  = "DELETE FROM supply_documents " +
-                "WHERE id = " + id;
+    @Override
+    public void reject(WriteOffDB writeOffDB) {
+        String sql = "UPDATE warehouse.write_off SET" +
+                " reject = ?" +
+                " WHERE id = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, writeOffDB.getReject());
+            preparedStatement.setInt(2, writeOffDB.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+            String sql  = "DELETE FROM warehouse.write_off " +
+                "WHERE production_order = " + id;
         try {
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }*/
+        }
+    }
+    public Integer findIdMaterial(String number) {
+        int id = 0;
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlResponse = "SELECT id FROM materials WHERE number='"+number+"'" ;
+            ResultSet resultSet = statement.executeQuery(sqlResponse);
+            while (resultSet.next()) {
+                id = resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return id;
+    }
+    @Override
+    public Integer EachWriteOff(List<SupplyDocumentsDB> supplyDocumentsDB) {
+        Integer stock_quantity = null, order_quantity = null;
+        ProductionOrdersDB productionOrdersDB = new ProductionOrdersDB();
+        productionOrdersDB.setNeed_quantity(supplyDocumentsDB.get(1).getQuantity());
+        productionOrdersDB.setMaterial(findIdMaterial(supplyDocumentsDB.get(1).getMaterial()));
+        try {
+            Statement statement = connection.createStatement();
+            String sqlResponse = "SELECT stock_quantity, order_quantity FROM materials WHERE number='"+supplyDocumentsDB.get(1).getMaterial()+"'" ;
+            ResultSet resultSet = statement.executeQuery(sqlResponse);
+            while (resultSet.next()) {
+                stock_quantity = resultSet.getInt(1);
+                order_quantity = resultSet.getInt(2);
+                if (stock_quantity < supplyDocumentsDB.get(1).getQuantity()) {
+                    return 0;
+                } else {
+                    if (stock_quantity - supplyDocumentsDB.get(1).getQuantity() < 10) {
+                        each(supplyDocumentsDB);
+                        update_material_stock(productionOrdersDB);
+                        set_status_write_off(supplyDocumentsDB.get(1).getProd_order());
+                        return 2;
+                    } else {
+                        each(supplyDocumentsDB);
+                        update_material_stock(productionOrdersDB);
+                        set_status_write_off(supplyDocumentsDB.get(1).getProd_order());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 1;
     }
 
     @Override
@@ -166,7 +254,9 @@ public class WriteOffImplemented implements WriteOff {
             statement.setFloat(5, writeOffDB.getPrice_item());
             statement.setFloat(6, writeOffDB.getTotal_price());
             statement.setString(7, writeOffDB.getType());
-            statement.executeUpdate();
+            if (writeOffDB.getQuantity() > 0) {
+                statement.executeUpdate();
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -334,45 +424,30 @@ public class WriteOffImplemented implements WriteOff {
             throw new RuntimeException(e);
         }
     }
-    public void each (ProductionOrdersDB productionOrdersDB){
-        Integer stock_quantity = null, need = productionOrdersDB.getNeed_quantity();
-        Float price_item = get_mid_price(productionOrdersDB.getMaterial());
-        String find_supplies ="SELECT * FROM warehouse.supply_documents WHERE mat_sup IN (SELECT id " +
-                "FROM warehouse.material_supplier WHERE material = "+ productionOrdersDB.getMaterial() +" ) AND " +
-                "current_stock > 0 ORDER BY date";
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(find_supplies);
-            while (resultSet.next() && need > 0) {
-                stock_quantity = resultSet.getInt(10);
-                if(stock_quantity<need){
-                    WriteOffDB writeOffDB = new WriteOffDB();
-                    writeOffDB.setLot_material(resultSet.getInt(1));
-                    writeOffDB.setQuantity(stock_quantity);
-                    writeOffDB.setProduction_order(productionOrdersDB.getId());
-                    writeOffDB.setDate(String.valueOf(currentDate));
-                    writeOffDB.setPrice_item(price_item);
-                    writeOffDB.setTotal_price(Float.parseFloat(String.format("%.2f", price_item*stock_quantity).replace(',', '.')));
-                    writeOffDB.setType("По средней себестоимости");
-                    save(writeOffDB);
-                    update_supply_document(resultSet.getInt(1),stock_quantity);
-                    need -= stock_quantity;
-                } else {
-                    WriteOffDB writeOffDB = new WriteOffDB();
-                    writeOffDB.setLot_material(resultSet.getInt(1));
-                    writeOffDB.setQuantity(need);
-                    writeOffDB.setProduction_order(productionOrdersDB.getId());
-                    writeOffDB.setDate(String.valueOf(currentDate));
-                    writeOffDB.setPrice_item(price_item);
-                    writeOffDB.setTotal_price(Float.parseFloat(String.format("%.2f", price_item*need).replace(',', '.')));
-                    writeOffDB.setType("По средней себестоимости");
-                    save(writeOffDB);
-                    update_supply_document(resultSet.getInt(1),need);
-                    need -= stock_quantity;
+    public void each (List<SupplyDocumentsDB> supplyDocumentsDB){
+        Integer stock_quantity = null;
+        Float price_item = null;
+        for (int i = 0; i < supplyDocumentsDB.size(); i++){
+            String find_price ="SELECT price_item FROM warehouse.supply_documents WHERE id = " + supplyDocumentsDB.get(i).getId();
+            try {
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(find_price);
+                while (resultSet.next()) {
+                 price_item = resultSet.getFloat(1);
                 }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            WriteOffDB writeOffDB = new WriteOffDB();
+            writeOffDB.setLot_material(supplyDocumentsDB.get(i).getId());
+            writeOffDB.setQuantity(supplyDocumentsDB.get(i).getWrite_off());
+            writeOffDB.setProduction_order(supplyDocumentsDB.get(i).getProd_order());
+            writeOffDB.setDate(String.valueOf(currentDate));
+            writeOffDB.setPrice_item(price_item);
+            writeOffDB.setTotal_price(Float.parseFloat(String.format("%.2f", price_item*supplyDocumentsDB.get(i).getWrite_off()).replace(',', '.')));
+            writeOffDB.setType("По себестоимости каждой единицы");
+            save(writeOffDB);
+            update_supply_document(supplyDocumentsDB.get(i).getId(),supplyDocumentsDB.get(i).getWrite_off());
         }
     }
     public Float get_mid_price (Integer id){
@@ -427,6 +502,30 @@ public class WriteOffImplemented implements WriteOff {
             throw new RuntimeException(e);
         }
     }
+
+    public void back_supply_document (ProductionOrdersDB productionOrdersDB){
+        String find_supplies = "SELECT lot_material, quantity FROM warehouse.write_off " +
+                "WHERE production_order = "+productionOrdersDB.getId();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(find_supplies);
+            while (resultSet.next() ) {
+                String sql = "UPDATE warehouse.supply_documents SET" +
+                    " current_stock = current_stock + ?" +
+                    " WHERE id = ?";
+                try {
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    preparedStatement.setInt(1, resultSet.getInt(2));
+                    preparedStatement.setInt(2, resultSet.getInt(1));
+                    preparedStatement.executeUpdate();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public void set_status_write_off (Integer id){
         String sql = "UPDATE production_orders SET" +
                 " status = ?" +
@@ -445,8 +544,6 @@ public class WriteOffImplemented implements WriteOff {
             fifo(productionOrdersDB);
         } else if (type == 2) {
             mid(productionOrdersDB);
-        } else if (type == 3) {
-            each(productionOrdersDB);
         }
     }
     @Override
@@ -480,5 +577,40 @@ public class WriteOffImplemented implements WriteOff {
         }
         return 1;
     }
+    @Override
+    public void backWriteOff(ProductionOrdersDB productionOrdersDB) {
+        Integer stock_quantity = null, order_quantity = null;
+        String sql = "UPDATE production_orders SET" +
+                " status = ?, reject_quantity = ?" +
+                " WHERE id = ?";
+        String back_write_off = "UPDATE materials SET" +
+                " stock_quantity = ?," +
+                " order_quantity = ?" +
+                " WHERE id = ?";
+        try {
+            Statement statement = connection.createStatement();
+            String sqlResponse = "SELECT stock_quantity, order_quantity FROM materials WHERE id='"+productionOrdersDB.getMaterial()+"'" ;
+            ResultSet resultSet = statement.executeQuery(sqlResponse);
+            back_supply_document(productionOrdersDB);
+            while (resultSet.next()) {
+                stock_quantity = resultSet.getInt(1);
+                order_quantity = resultSet.getInt(2);
+            }
+            PreparedStatement preparedStatement2 = connection.prepareStatement(back_write_off);
+            preparedStatement2.setInt(1, stock_quantity+productionOrdersDB.getNeed_quantity());
+            preparedStatement2.setInt(2, order_quantity+productionOrdersDB.getNeed_quantity());
+            preparedStatement2.setInt(3, productionOrdersDB.getMaterial());
+            preparedStatement2.executeUpdate();
 
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setBoolean(1, false);
+            preparedStatement.setInt(2, 0);
+            preparedStatement.setInt(3, productionOrdersDB.getId());
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        deleteById(productionOrdersDB.getId());
+    }
 }

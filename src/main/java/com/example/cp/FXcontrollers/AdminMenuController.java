@@ -106,6 +106,8 @@ public class AdminMenuController {
     @FXML
     private TableColumn<SuppliersDBProperty, String> email_col;
     @FXML
+    private TableColumn<SupplyDocumentsDBProperty, Integer> rej_sup_col;
+    @FXML
     private TextField email_sup;
     @FXML
     private Button exit_button;
@@ -281,8 +283,6 @@ public class AdminMenuController {
     @FXML
     private Button add_po;
     @FXML
-    private TextField reject_po;
-    @FXML
     private TableView<ProductionOrdersDBProperty> table_po;
     @FXML
     private Button wrire_off;
@@ -365,6 +365,7 @@ public class AdminMenuController {
         lot_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getLot()));
         current_stock_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getCurrent_stock()).asObject());
         month_leftovers_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getMonth_leftovers()).asObject());
+        rej_sup_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getRejected()).asObject());
 
         mat_po_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getNumber_material()));
         date_po_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getDate()));
@@ -546,7 +547,6 @@ public class AdminMenuController {
         }
         material_po.setText("");
         need_quant_po.setText("");
-        reject_po.setText("");
         date_po.setValue(null);
 
         table_po.setRowFactory(tv -> new TableRow<ProductionOrdersDBProperty>() {
@@ -1819,59 +1819,35 @@ public class AdminMenuController {
         }
     }
     @FXML
-    void AddRejectedMaterialButtonOnAction(ActionEvent event) throws IOException {
-        if (!table_po.getSelectionModel().isEmpty()&&reject_po.getText().matches("[-+]?\\d+")){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Уточнение");
-            alert.setHeaderText(null);
-            alert.setContentText("Внести количество бракованного материала?");
-            Optional<ButtonType> option = alert.showAndWait();
-            if (option.get() == ButtonType.OK) {
+    void AddRejectedMaterialButtonOnAction(ActionEvent event) throws IOException, InterruptedException {
+          if (!table_po.getSelectionModel().isEmpty()){
                 if(!table_po.getSelectionModel().getSelectedItem().isStatus()){
                     Alert alert4 = new Alert(Alert.AlertType.ERROR);
                     alert4.setTitle("Ошибка");
                     alert4.setHeaderText(null);
                     alert4.setContentText("Заказ находится в статусе 'открыто'. Внесение брака невозможно.");
                     alert4.showAndWait();
-                }
-                else if (table_po.getSelectionModel().getSelectedItem().getNeed_quantity()<Integer.valueOf(reject_po.getText())+table_po.getSelectionModel().getSelectedItem().getReject_quantity()){
-                    Alert alert4 = new Alert(Alert.AlertType.ERROR);
-                    alert4.setTitle("Ошибка");
-                    alert4.setHeaderText(null);
-                    alert4.setContentText("Количество брака превышает количество материала в заказе.");
-                    alert4.showAndWait();
-                }else {
-                    ProductionOrdersDB productionOrdersDB = new ProductionOrdersDB();
-                    productionOrdersDB.setId(table_po.getSelectionModel().getSelectedItem().getId());
-                    productionOrdersDB.setReject_quantity(Integer.valueOf(reject_po.getText()));
-                    org.apache.http.client.HttpClient client = HttpClients.createDefault();
-                    HttpPost request = new HttpPost(BASE_PRODUCTION_ORDER+"/add_rejected");
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    String jsonRequestBody = objectMapper.writeValueAsString(productionOrdersDB);
-                    StringEntity entity = new StringEntity(jsonRequestBody, StandardCharsets.UTF_8);
-                    entity.setContentType("application/json; charset=UTF-8");
-                    request.setEntity(entity);
-                    org.apache.http.HttpResponse response = client.execute(request);
-                    if(response.getStatusLine().getStatusCode()==200) {
-                        Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
-                        alert3.setTitle("ОК");
-                        alert3.setHeaderText(null);
-                        alert3.setContentText("Бракованный материал внесён.");
-                        alert3.showAndWait();
-                        search_productionOrders(null);
+                } else {
+                    FXMLLoader fxmlLoader = new FXMLLoader();
+                    fxmlLoader.setLocation(RestClient.class.getResource("reject.fxml"));
+                    fxmlLoader.load();
+                    Parent root = fxmlLoader.getRoot();
+                    Stage stage = new Stage();
+                    stage.setTitle("Выберите количество бракованного материала из партий " );
+                    stage.setScene(new Scene(root));
+                    RejectController controller = fxmlLoader.getController();
+                    controller.initialize(table_po.getSelectionModel().getSelectedItem().getMaterial(),
+                            table_po.getSelectionModel().getSelectedItem().getNumber_material(),
+                            table_po.getSelectionModel().getSelectedItem().getId());
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    stage.showAndWait();
+                    search_productionOrders(null);
+                    check_search_supply_documents();
                     }
-                }
-            }
-        } else if(table_po.getSelectionModel().isEmpty()){
+          } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
             alert.setContentText("Выберите строку!");
-            alert.showAndWait();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Ошибка");
-            alert.setHeaderText(null);
-            alert.setContentText("Некорректное значение числового поля.");
             alert.showAndWait();
         }
     }
@@ -2008,9 +1984,14 @@ public class AdminMenuController {
                     stage.setScene(new Scene(root));
                     EachController controller = fxmlLoader.getController();
                     controller.initialize(table_po.getSelectionModel().getSelectedItem().getMaterial(),
-                            table_po.getSelectionModel().getSelectedItem().getNeed_quantity(), table_po.getSelectionModel().getSelectedItem().getNumber_material());
+                            table_po.getSelectionModel().getSelectedItem().getNeed_quantity(),
+                            table_po.getSelectionModel().getSelectedItem().getNumber_material(),
+                            table_po.getSelectionModel().getSelectedItem().getId());
                     stage.initModality(Modality.APPLICATION_MODAL);
-                    stage.show();
+                    stage.showAndWait();
+                    search_productionOrders(null);
+                    check_search();
+                    check_search_supply_documents();
                   /*  org.apache.http.client.HttpClient client = HttpClients.createDefault();
                     HttpPost request = new HttpPost(BASE_WRITE_OFF + "/each");
                     ObjectMapper objectMapper = new ObjectMapper();
@@ -2139,7 +2120,7 @@ public class AdminMenuController {
                 productionOrdersDB.setMaterial(table_po.getSelectionModel().getSelectedItem().getMaterial());
 
                 org.apache.http.client.HttpClient client = HttpClients.createDefault();
-                HttpPost request = new HttpPost(BASE_PRODUCTION_ORDER+"/back_write_off");
+                HttpPost request = new HttpPost(BASE_WRITE_OFF+"/back");
                 ObjectMapper objectMapper = new ObjectMapper();
                 String jsonRequestBody = objectMapper.writeValueAsString(productionOrdersDB);
                 StringEntity entity = new StringEntity(jsonRequestBody, StandardCharsets.UTF_8);
@@ -2154,6 +2135,7 @@ public class AdminMenuController {
                     alert3.showAndWait();
                     search_productionOrders(null);
                     check_search();
+                    check_search_supply_documents();
                 }
             }
         } else {

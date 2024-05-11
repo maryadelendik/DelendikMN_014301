@@ -53,13 +53,13 @@ public class ProductionOrdersImplementedTest {
         productionOrders.update(productionOrdersDB);
     }
 
-    @Test
+  /*  @Test
     public void testReject() {
         ProductionOrdersDB productionOrdersDB = new ProductionOrdersDB();
         productionOrdersDB.setReject_quantity(2);
         productionOrdersDB.setId(17);
         productionOrders.reject(productionOrdersDB);
-    }
+    }*/
 
     @Test
     public void testWriteOff() {
@@ -71,14 +71,14 @@ public class ProductionOrdersImplementedTest {
         assertNotNull(result);
     }
 
-    @Test
+   /* @Test
     public void testBackWriteOff() {
         ProductionOrdersDB productionOrdersDB = new ProductionOrdersDB();
         productionOrdersDB.setMaterial(12);
         productionOrdersDB.setId(17);
         productionOrdersDB.setNeed_quantity(10);
         productionOrders.backWriteOff(productionOrdersDB);
-    }
+    }*/
 
     @Test
     public void testConsumptionReport() {
