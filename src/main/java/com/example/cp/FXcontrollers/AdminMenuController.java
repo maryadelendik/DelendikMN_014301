@@ -16,6 +16,8 @@ import com.example.cp.suppliers.SuppliersDBProperty;
 import com.example.cp.supply_documents.SupplyDocumentsDB;
 import com.example.cp.supply_documents.SupplyDocumentsDBProperty;
 import com.example.cp.users.UsersDB;
+import com.example.cp.write_off.ReportWO;
+import com.example.cp.write_off.ReportWOProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.beans.property.SimpleFloatProperty;
@@ -29,10 +31,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -79,8 +78,6 @@ public class AdminMenuController {
     private Button add_supplier;
     @FXML
     private TextField addr_sup;
-    @FXML
-    private TextArea report_text;
     @FXML
     private TableColumn<SuppliersDBProperty, String> address_col;
     @FXML
@@ -149,8 +146,8 @@ public class AdminMenuController {
     private DatePicker date_to;
     @FXML
     private Button consumption_choice;
-    @FXML
-    private Button quality_choice;
+  //  @FXML
+ //   private Button quality_choice;
     @FXML
     private Button suppliers_choice;
     @FXML
@@ -231,7 +228,6 @@ public class AdminMenuController {
     private TableColumn<SupplyDocumentsDBProperty, String> num_doc_col;
     @FXML
     private Label label1;
-
     @FXML
     private Label label2;
     @FXML
@@ -275,8 +271,6 @@ public class AdminMenuController {
     @FXML
     private Button edit_po;
     @FXML
-    private CheckBox avg_check;
-    @FXML
     private TableColumn<ProductionOrdersDBProperty, String> mat_po_col;
     @FXML
     private TextField need_quant_po;
@@ -300,12 +294,36 @@ public class AdminMenuController {
     private Tab report_tab;
     @FXML
     private ImageView blue;
+    @FXML
+    private TableColumn<ReportWOProperty, String> rep_abc_col;
 
+    @FXML
+    private TableColumn<ReportWOProperty, String> rep_mat_col;
+    @FXML
+    private Label rep_label;
+
+    @FXML
+    private TableColumn<ReportWOProperty, Float> rep_price_col;
+
+    @FXML
+    private TableColumn<ReportWOProperty, Integer> rep_qua_col;
+
+    @FXML
+    private TableColumn<ReportWOProperty, Integer> rep_rej_col;
+
+    @FXML
+    private TableColumn<ReportWOProperty, String> rep_sup_col;
+    @FXML
+    private TableColumn<ReportWOProperty, Integer> rep_abc_qua_col;
+
+    @FXML
+    private TableView<ReportWOProperty> rep_table;
     @FXML
     private TabPane tab_pane;
     @FXML
     private ImageView green;
     ArrayList<Report> report_gist = new ArrayList<>();
+    ArrayList<ReportWO> report_gist2 = new ArrayList<>();
     String for_report;
     private Integer report_type;
     @FXML
@@ -320,6 +338,7 @@ public class AdminMenuController {
     private final ObservableList<MaterialsDBProperty> tableMaterialsDBProperties = FXCollections.observableArrayList();
     private final ObservableList<SupplyDocumentsDBProperty> tableSupplyDocumentsDBProperties = FXCollections.observableArrayList();
     private final ObservableList<MaterialsDBProperty> tableSearchMaterialsDBProperties = FXCollections.observableArrayList();
+    private final ObservableList<ReportWOProperty> tableReportProperties = FXCollections.observableArrayList();
     private String main_login;
     private static final String BASE_PRICE = "http://localhost:8080/price";
     private static final String BASE_SUPPLIER = "http://localhost:8080/supplier";
@@ -2197,20 +2216,18 @@ public class AdminMenuController {
     }
     @FXML
     void ConsumptionButtonOnAction(ActionEvent event) {
-        avg_check.setVisible(false);
+        report_type=null;
         mat_report.setVisible(false);
         date_from.setValue(null);
         date_to.setValue(null);
         date_from.setVisible(true);
         date_to.setVisible(true);
         show_report.setVisible(true);
-        report_text.setVisible(true);
-        report_text.clear();
+        rep_label.setText("");
         report_type=1;
     }
-    @FXML
+    /*@FXML
     void QualityButtonOnAction(ActionEvent event) {
-        avg_check.setVisible(false);
         mat_report.setVisible(false);
         date_from.setValue(null);
         date_to.setValue(null);
@@ -2220,19 +2237,27 @@ public class AdminMenuController {
         report_text.setVisible(true);
         report_text.clear();
         report_type=2;
-    }
+    }*/
     @FXML
     void SuppliersChoiceButtonOnAction(ActionEvent event) throws IOException, InterruptedException {
-        date_from.setVisible(false);
-        date_to.setVisible(false);
-        avg_check.setVisible(true);
+        report_type=null;
+        rep_label.setText("");
+        rep_price_col.setVisible(false);
+        rep_rej_col.setVisible(false);
+        rep_sup_col.setVisible(false);
+        rep_qua_col.setVisible(false);
+        rep_table.setVisible(false);
+        date_from.setVisible(true);
+        date_to.setVisible(true);
+        date_from.setValue(null);
+        date_to.setValue(null);
         mat_report.setVisible(true);
         show_report.setVisible(true);
-        report_text.setVisible(true);
-        report_text.clear();
+        show_diagram.setVisible(false);
+        load_button.setVisible(false);
+        report_type=3;
         mat_report.getItems().clear();
         mat_report.setPromptText("Материал");
-
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_MATERIAL+"/find_materials"))
@@ -2245,7 +2270,6 @@ public class AdminMenuController {
             HashSet<String> materials  = objectMapper.readValue(response.body(), HashSet.class);
             mat_cb.addAll(materials);
             mat_report.setItems(mat_cb.sorted());
-            report_type=3;
         }
     }
     @FXML
@@ -2266,26 +2290,24 @@ public class AdminMenuController {
                 alert.showAndWait();
             } else {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
-                SearchProductionOrders searchProductionOrders = new SearchProductionOrders();
-                searchProductionOrders.setDate_from(String.valueOf(date_from.getValue()));
-                searchProductionOrders.setDate_to(String.valueOf(date_to.getValue()));
+                ReportWO reportWO = new ReportWO();
+                reportWO.setDate_to(String.valueOf(date_to.getValue()));
+                reportWO.setDate_from(String.valueOf(date_from.getValue()));
 
                 org.apache.http.client.HttpClient client = HttpClients.createDefault();
-                HttpPost request = new HttpPost(BASE_REPORT+"/consumption");
+                HttpPost request = new HttpPost(BASE_REPORT+"/abc");
                 ObjectMapper objectMapper = new ObjectMapper();
-                String jsonRequestBody = objectMapper.writeValueAsString(searchProductionOrders);
+                String jsonRequestBody = objectMapper.writeValueAsString(reportWO);
                 StringEntity entity = new StringEntity(jsonRequestBody, StandardCharsets.UTF_8);
                 entity.setContentType("application/json; charset=UTF-8");
                 request.setEntity(entity);
                 org.apache.http.HttpResponse response = client.execute(request);
                 String responseBody = EntityUtils.toString(response.getEntity());
-                ArrayList<Report> report = objectMapper.readValue(responseBody, new TypeReference<ArrayList<Report>>() {});
-               // ArrayList<Report> report = Arrays.asList(objectMapper.readValue(responseBody, ArrayList.class));
+                ArrayList<ReportWO> report = objectMapper.readValue(responseBody, new TypeReference<ArrayList<ReportWO>>() {});
                 report_gist.clear();
-                report_gist=report;
+                report_gist2=report;
                 if (report.size()==0){
-                    report_text.setText("Данные за указанный период отсутствуют.");
+                    rep_label.setText("Данные за указанный период отсутствуют.");
                 } else {
                     LocalDate df = date_from.getValue();
                     String formattedDateFrom = df.format(formatter);
@@ -2294,9 +2316,9 @@ public class AdminMenuController {
                     String report_string ="Расход материалов за период с "+formattedDateFrom+
                             " по "+formattedDateTo+" :\n";
                     for (int i=0; i<report.size();i++){
-                        report_string += report.get(i).getMaterial() +"\t\t"+report.get(i).getQuantity()+"\n";
+                     //   report_string += report.get(i).getMaterial() +"\t\t"+report.get(i).getQuantity()+"\n";
                     }
-                    report_text.setText(report_string);
+                    rep_label.setText(report_string);
                     show_diagram.setVisible(true);
                     load_button.setVisible(true);
                     for_report=null;
@@ -2304,71 +2326,76 @@ public class AdminMenuController {
                 }
             }
         }
-        } else if (report_type==3) {
-            if(mat_report.getValue()==null&&!avg_check.isSelected()){
+        }
+        else if (report_type==3) {
+            if(mat_report.getValue()==null||date_to.getValue()==null||date_from.getValue()==null){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Ошибка");
                 alert.setHeaderText(null);
                 alert.setContentText("Выберите критерии для отчёта.");
                 alert.showAndWait();
             } else{
-                if(mat_report.getValue()!=null&&!avg_check.isSelected()){
-                    ProductionOrdersDB productionOrdersDB = new ProductionOrdersDB();
-                    productionOrdersDB.setNumber_material(mat_report.getValue());
+                if(date_to.getValue().compareTo(date_from.getValue())<0){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Ошибка");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Неверный интервал дат.");
+                    alert.showAndWait();
+                } else {
+                    ReportWO reportWO = new ReportWO();
+                    reportWO.setDate_to(String.valueOf(date_to.getValue()));
+                    reportWO.setDate_from(String.valueOf(date_from.getValue()));
+                    reportWO.setMaterial(mat_report.getValue());
 
                     org.apache.http.client.HttpClient client = HttpClients.createDefault();
                     HttpPost request = new HttpPost(BASE_REPORT+"/suppliers");
                     ObjectMapper objectMapper = new ObjectMapper();
-                    String jsonRequestBody = objectMapper.writeValueAsString(productionOrdersDB);
+                    String jsonRequestBody = objectMapper.writeValueAsString(reportWO);
                     StringEntity entity = new StringEntity(jsonRequestBody, StandardCharsets.UTF_8);
                     entity.setContentType("application/json; charset=UTF-8");
                     request.setEntity(entity);
                     org.apache.http.HttpResponse response = client.execute(request);
                     String responseBody = EntityUtils.toString(response.getEntity());
-                    ArrayList<Report> report = objectMapper.readValue(responseBody, new TypeReference<ArrayList<Report>>() {});
+                    ArrayList<ReportWO> report = objectMapper.readValue(responseBody, new TypeReference<ArrayList<ReportWO>>() {});
                     report_gist.clear();
-                    report_gist=report;
+                    report_gist2=report;
                     if (report.size()==0){
-                        report_text.setText("Данные по указанному материалу отсутствуют.");
+                        rep_label.setText("Данные по указанному материалу отсутствуют.");
                     } else {
-                        String report_string ="Закупочная стоимость материала "+mat_report.getValue()+
+                        rep_label.setText("Анализ поставщиков материала " + mat_report.getValue());
+                        rep_price_col.setVisible(true);
+                        rep_rej_col.setVisible(true);
+                        rep_sup_col.setVisible(true);
+                        rep_qua_col.setVisible(true);
+                        rep_table.setVisible(true);
+                        rep_table.setStyle(" -fx-font-size: 16 px;");
+
+                        rep_price_col.setCellValueFactory(field -> new SimpleFloatProperty(field.getValue().getAvg_item_price()).asObject());
+                        rep_rej_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getRejected()).asObject());
+                        rep_sup_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getSupplier()));
+                        rep_qua_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getTotal_quantity()).asObject());
+
+                        for (ReportWO reportWO1 : report) {
+                            ReportWOProperty e = new ReportWOProperty(reportWO1);
+                            tableReportProperties.add(e);
+                        }
+                        rep_table.setItems(tableReportProperties);
+
+                        /*String report_string ="Закупочная стоимость материала "+mat_report.getValue()+
                                 " у различных поставщиков:\n";
                         for (int i=0; i<report.size();i++){
-                            report_string += report.get(i).getSupplier() +"\t\t"+report.get(i).getPrice()+"\n";
-                        }
-                        report_text.setText(report_string);
+                            report_string += report.get(i).getSupplier() +"\t\t"+report.get(i).getTotal_quantity()+
+                                    "\t\t"+report.get(i).getAvg_item_price()+"\t\t"+report.get(i).getRejected()+"\n";
+                        }*/
+                       // report_text.setText(report_string);
                         show_diagram.setVisible(true);
                         load_button.setVisible(true);
                         for_report=null;
-                        for_report=report_string;
+                      //  for_report=report_string;
                     }
-                } else if (avg_check.isSelected()) {
-                    HttpClient httpClient = HttpClient.newHttpClient();
-                    HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(BASE_REPORT+"/avg_suppliers"))
-                            .header("Content-Type", "application/json; charset=UTF-8")
-                            .GET()
-                            .build();
-                    HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                        ObjectMapper objectMapper = new ObjectMapper();
-                    ArrayList<Report> report = objectMapper.readValue(response.body(),  new TypeReference<ArrayList<Report>>() {});
-                       report_gist.clear();
-                    report_gist=report;
-                    if (report.size()==0){
-                        report_text.setText("Данные отсутствуют.");
-                    } else {
-                        String report_string ="Средняя закупочная стоимость материалов у различных поставщиков:\n";
-                        for (int i=0; i<report.size();i++){
-                            report_string += report.get(i).getSupplier() +"\t\t"+report.get(i).getPrice()+"\n";
-                        }
-                        report_text.setText(report_string);
-                        show_diagram.setVisible(true);
-                        load_button.setVisible(true);
-                        for_report=null;
-                        for_report=report_string;
-                }}
             }
-        }else if (report_type==2) {
+            }
+        }/*else if (report_type==2) {
             if(date_to.getValue()==null||date_from.getValue()==null){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Ошибка");
@@ -2424,7 +2451,7 @@ public class AdminMenuController {
                     }
                 }
             }
-        }
+        }*/
     }
     @FXML
     void ShowDiagramButtonOnAction(ActionEvent event) {
@@ -2448,14 +2475,35 @@ public class AdminMenuController {
         stage.show();
         } else if (report_type==3) {
             Stage stage = new Stage();
+            CategoryAxis xAxis = new CategoryAxis();
+            NumberAxis yAxis = new NumberAxis();
+            StackedBarChart<String, Number> stackedBarChart = new StackedBarChart<>(xAxis, yAxis);
+            stackedBarChart.setTitle("Анализ поставщиков материала "+mat_report.getValue());
+            XYChart.Series<String, Number> series1 = new XYChart.Series<>();
+            series1.setName("Общее количество материала");
+            for (int i = 0; i < report_gist2.size(); i++) {
+                series1.getData().add(new XYChart.Data(report_gist2.get(i).getSupplier(), report_gist2.get(i).getTotal_quantity()-report_gist2.get(i).getRejected()));
+            }
+            XYChart.Series<String, Number> series2 = new XYChart.Series<>();
+            series2.setName("Брак");
+            for (int i = 0; i < report_gist2.size(); i++) {
+                series2.getData().add(new XYChart.Data(report_gist2.get(i).getSupplier(), report_gist2.get(i).getRejected()));
+            }
+            stackedBarChart.getData().addAll(series1, series2);
+            Scene scene = new Scene(stackedBarChart, 1000, 700);
+         //   scene.getStylesheets().add(RestClient.class.getResource("style_chart.css").toExternalForm());
+            stage.setScene(scene);
+            stage.setTitle("Анализ поставщиков");
+            stage.show();
+           /* Stage stage = new Stage();
             CategoryAxis x = new CategoryAxis();
             x.setLabel("Поставщики");
             NumberAxis y = new NumberAxis();
-            y.setLabel("Закупочная стоимость");
+            y.setLabel("Количество");
             BarChart bc = new BarChart(x, y);
             XYChart.Series material = new XYChart.Series();
-            for (int i = 0; i < report_gist.size(); i++) {
-                material.getData().add(new XYChart.Data(report_gist.get(i).getSupplier(), report_gist.get(i).getPrice()));
+            for (int i = 0; i < report_gist2.size(); i++) {
+                material.getData().add(new XYChart.Data(report_gist2.get(i).getSupplier(), report_gist2.get(i).getTotal_quantity()));
             }
             bc.getData().add(material);
             VBox vbox = new VBox(bc);
@@ -2463,7 +2511,7 @@ public class AdminMenuController {
             stage.setScene(sc);
             stage.setHeight(500);
             stage.setWidth(900);
-            stage.show();
+            stage.show();*/
         }else if (report_type==2) {
             Stage stage = new Stage();
             CategoryAxis x = new CategoryAxis();
@@ -2494,9 +2542,9 @@ public class AdminMenuController {
         if(report_type==1){
             outputWriter = new BufferedWriter(new FileWriter("consumption_report.txt"));
         } else if (report_type==3) {
-            if (avg_check.isSelected())
+           /* if (avg_check.isSelected())
                 outputWriter = new BufferedWriter(new FileWriter("avg_suppliers_report.txt"));
-          else  outputWriter = new BufferedWriter(new FileWriter("suppliers_report.txt"));
+          else  outputWriter = new BufferedWriter(new FileWriter("suppliers_report.txt"));*/
         }
         else if (report_type==2) {
                 outputWriter = new BufferedWriter(new FileWriter("quality_report.txt"));

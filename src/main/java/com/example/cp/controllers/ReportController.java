@@ -7,6 +7,9 @@ import com.example.cp.materials.Materials;
 import com.example.cp.materials.MaterialsDB;
 import com.example.cp.materials.MaterialsImplemented;
 import com.example.cp.production_orders.*;
+import com.example.cp.write_off.ReportWO;
+import com.example.cp.write_off.WriteOff;
+import com.example.cp.write_off.WriteOffImplemented;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,10 +36,16 @@ public class ReportController {
         return new ResponseEntity<>(productionOrders.qualityReport(searchProductionOrders), HttpStatus.OK);
     }
     @PostMapping ("/suppliers")
-    public ResponseEntity<List<Report>> suppliers(@RequestBody ProductionOrdersDB productionOrdersDB) {
+    public ResponseEntity<List<ReportWO>> suppliers(@RequestBody ReportWO reportWO) {
         System.out.println("Выполняется формирование отчёта о поставщиках...");
-        ProductionOrders productionOrders = new ProductionOrdersImplemented();
-        return new ResponseEntity<>(productionOrders.suppliersReport(productionOrdersDB), HttpStatus.OK);
+        WriteOff writeOff = new WriteOffImplemented();
+        return new ResponseEntity<>(writeOff.suppliersReport(reportWO), HttpStatus.OK);
+    }
+    @PostMapping ("/abc")
+    public ResponseEntity<List<ReportWO>> abc(@RequestBody ReportWO reportWO) {
+        System.out.println("Выполняется ABC анализ расхода материалов...");
+        WriteOff writeOff = new WriteOffImplemented();
+        return new ResponseEntity<>(writeOff.ABCReport(reportWO), HttpStatus.OK);
     }
     @GetMapping ("/avg_suppliers")
     public ResponseEntity<ArrayList<Report>> avgSuppliers() {

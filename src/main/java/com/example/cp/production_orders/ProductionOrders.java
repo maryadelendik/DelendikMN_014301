@@ -16,7 +16,7 @@ public interface ProductionOrders {
 
     ArrayList<Report> consumptionReport(SearchProductionOrders searchProductionOrders);
     ArrayList<Report> qualityReport(SearchProductionOrders searchProductionOrders);
-    ArrayList<Report> suppliersReport(ProductionOrdersDB productionOrdersDB);
+
     ArrayList<Report> avgSuppliersReport();
 
     List<ProductionOrdersDB> search(SearchProductionOrders searchProductionOrders);

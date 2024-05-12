@@ -44,11 +44,11 @@ public class SupplyDocumentsDB implements Serializable {
     }
 
     public Integer getRejected() {
-        return rejected;
+        return Objects.requireNonNullElse(rejected, 0);
     }
 
     public void setRejected(Integer rejected) {
-        this.rejected = rejected;
+        this.rejected = Objects.requireNonNullElse(rejected, 0);
     }
 
     public Integer getProd_order() {

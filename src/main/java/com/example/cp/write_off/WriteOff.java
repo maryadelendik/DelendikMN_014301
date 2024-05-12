@@ -3,8 +3,10 @@ package com.example.cp.write_off;
 
 
 import com.example.cp.production_orders.ProductionOrdersDB;
+import com.example.cp.production_orders.Report;
 import com.example.cp.supply_documents.SupplyDocumentsDB;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface WriteOff {
@@ -20,4 +22,6 @@ public interface WriteOff {
     void backWriteOff(ProductionOrdersDB productionOrdersDB);
     void update(WriteOffDB writeOffDB);
     Float count(WriteOffDB writeOffDB);
+    ArrayList<ReportWO> suppliersReport(ReportWO reportWO);
+    ArrayList<ReportWO> ABCReport(ReportWO reportWO);
 }

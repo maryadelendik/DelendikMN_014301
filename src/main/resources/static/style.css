@@ -285,6 +285,15 @@
 /*.table-row-cell:filled:selected .table-cell {
     -fx-text-fill: black;
 }*/
+.table-view .column-header,
+.table-view .column-header .filler,
+.table-view .column-header-background .filler {
+    -fx-background-color: #001933;
+}
+.table-view .headers-region-background .filler{
+    -fx-background-color:  #001933;
+    -fx-border-color: #001933;
+}
 .table-view .headers-region{
     -fx-background-color:  #001933;
     -fx-border-color: #001933;
@@ -299,6 +308,29 @@
 .tab-pane .tab-header-background {
     -fx-background-color: #EAECEE;
 }
+.chart-series-bar.series0 {
+    -fx-bar-fill: #ff0000;
+}
+.chart-series-bar.series1 {
+    -fx-bar-fill: #00ff00;
+}
+.dialog-pane {
+    -fx-background-color: black;
+}
+
+.dialog-pane .label {
+    -fx-text-fill: white;
+}
+
+.dialog-pane:header .header-panel {
+    -fx-background-color: black;
+}
+
+.dialog-pane:header .header-panel .label {
+    -fx-font-style: italic;
+    -fx-font-size: 2em;
+}
+
 .tab .tab-label {
     -fx-alignment: CENTER;
     -fx-text-fill: #001933;

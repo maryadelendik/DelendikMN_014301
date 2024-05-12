@@ -346,28 +346,7 @@ public class ProductionOrdersImplemented implements ProductionOrders {
         return report;
     }
 
-    @Override
-    public ArrayList<Report> suppliersReport(ProductionOrdersDB productionOrdersDB) {
-        ArrayList<Report> report = new ArrayList<Report>();
-        try {
-            Statement statement = connection.createStatement();
 
-            String sqlResponse = "SELECT S.name, price FROM warehouse.material_supplier MS \n" +
-                    "INNER JOIN warehouse.suppliers S ON MS.supplier=S.id " +
-                    "WHERE material = (SELECT id FROM materials WHERE number = '"+productionOrdersDB.getNumber_material()+"');";
-
-            ResultSet resultSet = statement.executeQuery(sqlResponse);
-            while (resultSet.next()) {
-                Report report_fill = new Report();
-                report_fill.setSupplier(resultSet.getString(1));
-                report_fill.setPrice(resultSet.getFloat(2));
-                report.add(report_fill);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return report;
-    }
 
     @Override
     public ArrayList<Report> avgSuppliersReport() {

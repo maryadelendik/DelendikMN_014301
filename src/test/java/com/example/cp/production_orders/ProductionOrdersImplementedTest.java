@@ -96,12 +96,12 @@ public class ProductionOrdersImplementedTest {
         assertFalse(productionOrders.qualityReport(searchProductionOrders).isEmpty());
     }
 
-    @Test
+   /* @Test
     public void testSuppliersReport() {
         ProductionOrdersDB productionOrdersDB = new ProductionOrdersDB();
         productionOrdersDB.setNumber_material("JJ111");
         assertFalse(productionOrders.suppliersReport(productionOrdersDB).isEmpty());
-    }
+    }*/
 
     @Test
     public void testAvgSuppliersReport() {

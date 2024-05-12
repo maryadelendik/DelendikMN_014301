@@ -2,10 +2,12 @@ package com.example.cp.write_off;
 
 
 import com.example.cp.DatabaseConnection;
+import com.example.cp.materials.MaterialsDB;
 import com.example.cp.prices.Prices;
 import com.example.cp.prices.PricesDB;
 import com.example.cp.prices.PricesImplemented;
 import com.example.cp.production_orders.ProductionOrdersDB;
+import com.example.cp.production_orders.Report;
 import com.example.cp.supply_documents.SupplyDocumentsDB;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -325,6 +327,77 @@ public class WriteOffImplemented implements WriteOff {
         System.out.println(findIdSupplier(writeOffDB.getSupplier()));
         return writeOffDB.getQuantity()*prices.getForMatSup(pricesDB);*/
         return null;
+    }
+    @Override
+    public ArrayList<ReportWO> suppliersReport(ReportWO reportWO) {
+        ArrayList<ReportWO> report = new ArrayList<ReportWO>();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlResponse = "SELECT S.name, SD.quantity, ROUND(AVG(SD.price_item),2), SUM(WO.reject)  FROM warehouse.supply_documents SD INNER JOIN \n" +
+                    "warehouse.material_supplier MS ON MS.id=SD.mat_sup INNER JOIN\n" +
+                    "warehouse.write_off WO ON WO.lot_material=SD.id INNER JOIN\n" +
+                    "warehouse.suppliers S ON MS.supplier=S.id WHERE MS.material = (SELECT id FROM warehouse.materials WHERE number = '"+reportWO.getMaterial()+"') \n" +
+                    "AND (SD.date BETWEEN '"+reportWO.getDate_from()+"' AND '"+reportWO.getDate_to()+"') GROUP BY mat_sup;";
+
+            ResultSet resultSet = statement.executeQuery(sqlResponse);
+            while (resultSet.next()) {
+                ReportWO report_fill = new ReportWO();
+                report_fill.setSupplier(resultSet.getString(1));
+                report_fill.setTotal_quantity(resultSet.getInt(2));
+                report_fill.setAvg_item_price(resultSet.getFloat(3));
+                report_fill.setRejected(resultSet.getInt(4));
+                report.add(report_fill);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return report;
+    }
+
+    @Override
+    public ArrayList<ReportWO> ABCReport(ReportWO reportWO) {
+        ArrayList<ReportWO> report = new ArrayList<ReportWO>();
+        Float total = (float) 0;
+        try {
+            Statement statement = connection.createStatement();
+            Statement statement2 = connection.createStatement();
+            String total_quantity = "SELECT SUM(quantity) FROM warehouse.write_off WHERE \n" +
+                    "(date BETWEEN '"+reportWO.getDate_from()+"' AND '"+reportWO.getDate_to()+"');";
+            String sqlResponse = "SELECT M.number, SUM(WO.quantity) FROM warehouse.write_off WO INNER JOIN \n" +
+                    "warehouse.supply_documents SD ON SD.id=WO.lot_material INNER JOIN\n" +
+                    "warehouse.material_supplier MS ON MS.id=SD.mat_sup INNER JOIN\n" +
+                    "warehouse.materials M ON M.id=MS.material WHERE \n" +
+                    "(WO.date BETWEEN '"+reportWO.getDate_from()+"' AND '"+reportWO.getDate_to()+"') GROUP BY M.number;";
+            ResultSet resultSet2 = statement2.executeQuery(total_quantity);
+            while (resultSet2.next()) {
+                total = (float) resultSet2.getInt(1);
+            }
+            ResultSet resultSet = statement.executeQuery(sqlResponse);
+            while (resultSet.next()) {
+                ReportWO report_fill = new ReportWO();
+                report_fill.setMaterial(resultSet.getString(1));
+                report_fill.setTotal_quantity(resultSet.getInt(2));
+                report_fill.setAvg_item_price( Float.parseFloat(String.format("%.2f", (float) resultSet.getInt(2) /total*100).replace(',', '.')));
+                report.add(report_fill);
+                report.sort(Comparator.comparing(ReportWO::getAvg_item_price).reversed());
+            }
+            Float total_percent = (float) 0;
+            for (int i = 0; i<report.size();i++){
+                total_percent += report.get(i).getAvg_item_price();
+                if (total_percent<80) {
+                    report.get(i).setAbc("A");
+                } else if (total_percent>=80 && total_percent<=95) {
+                    report.get(i).setAbc("B");
+                } else if (total_percent>95) {
+                    report.get(i).setAbc("C");
+                }
+            }
+          report.sort(Comparator.comparing(ReportWO::getAbc));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return report;
     }
 
     public Integer findIdSupplier(String name) {/*

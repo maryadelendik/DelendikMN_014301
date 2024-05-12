@@ -11,7 +11,6 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.ImageView?>
@@ -414,49 +413,50 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #fff;">
                      <children>
-                        <Button fx:id="consumption_choice" layoutY="14.0" mnemonicParsing="false" onAction="#ConsumptionButtonOnAction" prefHeight="40.0" prefWidth="300.0" text="Расход" textFill="WHITE">
+                        <Button fx:id="consumption_choice" layoutY="14.0" mnemonicParsing="false" onAction="#ConsumptionButtonOnAction" prefHeight="40.0" prefWidth="300.0" text="ABC анализ" textFill="WHITE">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Button>
-                        <Button fx:id="quality_choice" layoutY="54.0" mnemonicParsing="false" onAction="#QualityButtonOnAction" prefHeight="40.0" prefWidth="300.0" text="Качество" textFill="WHITE">
+                        <Button fx:id="suppliers_choice" layoutY="54.0" mnemonicParsing="false" onAction="#SuppliersChoiceButtonOnAction" prefHeight="40.0" prefWidth="300.0" text="Поставщики" textFill="WHITE">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Button>
-                        <Button fx:id="suppliers_choice" layoutY="92.0" mnemonicParsing="false" onAction="#SuppliersChoiceButtonOnAction" prefHeight="40.0" prefWidth="300.0" text="Поставщики" textFill="WHITE">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="show_report" layoutX="31.0" layoutY="262.0" mnemonicParsing="false" onAction="#ShowReportButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Отчёт" textFill="WHITE" visible="false">
+                        <Button fx:id="show_report" layoutX="31.0" layoutY="315.0" mnemonicParsing="false" onAction="#ShowReportButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Отчёт" textFill="WHITE" visible="false">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Button>
                         <DatePicker fx:id="date_from" layoutX="31.0" layoutY="161.0" prefHeight="38.0" prefWidth="235.0" promptText="Дата c" style="-fx-font-size: 16;" visible="false" />
                         <DatePicker fx:id="date_to" layoutX="31.0" layoutY="211.0" prefHeight="38.0" prefWidth="235.0" promptText="Дата по" style="-fx-font-size: 16;" visible="false" />
-                        <TextArea fx:id="report_text" layoutX="342.0" layoutY="14.0" prefHeight="746.0" prefWidth="1181.0" visible="false">
-                           <font>
-                              <Font size="16.0" />
-                           </font>
-                        </TextArea>
-                        <Button fx:id="show_diagram" layoutX="31.0" layoutY="312.0" mnemonicParsing="false" onAction="#ShowDiagramButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Диаграмма" textFill="WHITE" visible="false">
+                        <Button fx:id="show_diagram" layoutX="31.0" layoutY="365.0" mnemonicParsing="false" onAction="#ShowDiagramButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Диаграмма" textFill="WHITE" visible="false">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="load_button" layoutX="31.0" layoutY="362.0" mnemonicParsing="false" onAction="#LoadButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Скачать" textFill="WHITE" visible="false">
+                        <Button fx:id="load_button" layoutX="31.0" layoutY="415.0" mnemonicParsing="false" onAction="#LoadButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Скачать" textFill="WHITE" visible="false">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <CheckBox fx:id="avg_check" layoutX="19.0" layoutY="215.0" mnemonicParsing="false" onAction="#AvgCheckPressedOnAction" text="Среднее " visible="false">
+                        <ComboBox fx:id="mat_report" layoutX="32.0" layoutY="263.0" prefHeight="38.0" prefWidth="235.0" promptText="Материал" style="-fx-font-size: 16;" visible="false" />
+                        <TableView fx:id="rep_table" layoutX="342.0" layoutY="66.0" prefHeight="694.0" prefWidth="1180.0" visible="false">
+                          <columns>
+                            <TableColumn fx:id="rep_sup_col" prefWidth="295.0" text="Поставщик" visible="false" />
+                            <TableColumn fx:id="rep_qua_col" prefWidth="295.0" text="Общее кол-во материала" visible="false" />
+                              <TableColumn fx:id="rep_price_col" prefWidth="295.0" text="Средняя стоимость за ед." visible="false" />
+                              <TableColumn fx:id="rep_rej_col" prefWidth="295.0" text="Общее кол-во брака" visible="false" />
+                              <TableColumn fx:id="rep_mat_col" prefWidth="393.0" text="Материал" visible="false" />
+                              <TableColumn fx:id="rep_abc_qua_col" prefWidth="394.0" text="Количество" visible="false" />
+                              <TableColumn fx:id="rep_abc_col" prefWidth="394.0" text="Класс" visible="false" />
+                          </columns>
+                        </TableView>
+                        <Label fx:id="rep_label" layoutX="344.0" layoutY="25.0" prefHeight="38.0" prefWidth="1175.0" wrapText="true">
                            <font>
-                              <Font size="16.0" />
+                              <Font name="System Bold" size="16.0" />
                            </font>
-                        </CheckBox>
-                        <ComboBox fx:id="mat_report" layoutX="19.0" layoutY="161.0" prefHeight="38.0" prefWidth="265.0" promptText="Материал" style="-fx-font-size: 16;" visible="false" />
+                        </Label>
                      </children>
                   </AnchorPane>
                </content>
