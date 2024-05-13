@@ -45,8 +45,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
@@ -70,6 +74,9 @@ public class AdminMenuController {
     private ResourceBundle resources;
     @FXML
     private URL location;
+
+    @FXML
+    private Button akt_button;
     @FXML
     private Button add_material;
     @FXML
@@ -265,6 +272,8 @@ public class AdminMenuController {
     @FXML
     private TableColumn<ProductionOrdersDBProperty, String> date_po_col;
     @FXML
+    private TableColumn<ProductionOrdersDBProperty, Integer> order_col;
+    @FXML
     private Button delete_po;
     @FXML
     private ImageView user_image;
@@ -315,7 +324,12 @@ public class AdminMenuController {
     private TableColumn<ReportWOProperty, String> rep_sup_col;
     @FXML
     private TableColumn<ReportWOProperty, Integer> rep_abc_qua_col;
-
+    @FXML
+    private TableColumn<ReportWOProperty, String> rep_tot_pr_col;
+    @FXML
+    private TableColumn<ReportWOProperty, String> rep_perc_col;
+    @FXML
+    private TableColumn<ReportWOProperty, String> rep_pr_rej_col;
     @FXML
     private TableView<ReportWOProperty> rep_table;
     @FXML
@@ -353,6 +367,9 @@ public class AdminMenuController {
     private PseudoClass closed = PseudoClass.getPseudoClass("closed");
     private PseudoClass reject = PseudoClass.getPseudoClass("reject");
     private PseudoClass little = PseudoClass.getPseudoClass("little");
+    private PseudoClass a = PseudoClass.getPseudoClass("a");
+    private PseudoClass b = PseudoClass.getPseudoClass("b");
+    private PseudoClass c = PseudoClass.getPseudoClass("c");
     @FXML
     void initialize(Authorization auth_menu) throws IOException, InterruptedException {
         if(!auth_menu.getRole()){
@@ -390,6 +407,7 @@ public class AdminMenuController {
         date_po_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getDate()));
         quant_po_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getNeed_quantity()).asObject());
         rej_po_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getReject_quantity()).asObject());
+        order_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getId()).asObject());
 
         red.setImage(new Image(RestClient.class.getResource("red.png").openStream()));
         blue.setImage(new Image(RestClient.class.getResource("blue.png").openStream()));
@@ -2217,13 +2235,26 @@ public class AdminMenuController {
     @FXML
     void ConsumptionButtonOnAction(ActionEvent event) {
         report_type=null;
-        mat_report.setVisible(false);
-        date_from.setValue(null);
-        date_to.setValue(null);
+        rep_label.setText("");
+        rep_abc_col.setVisible(false);
+        rep_abc_qua_col.setVisible(false);
+        rep_mat_col.setVisible(false);
+        rep_price_col.setVisible(false);
+        rep_rej_col.setVisible(false);
+        rep_pr_rej_col.setVisible(false);
+        rep_sup_col.setVisible(false);
+        rep_qua_col.setVisible(false);
+        rep_table.setVisible(false);
         date_from.setVisible(true);
         date_to.setVisible(true);
+        date_from.setValue(null);
+        date_to.setValue(null);
+        mat_report.setVisible(false);
         show_report.setVisible(true);
-        rep_label.setText("");
+        show_diagram.setVisible(false);
+        load_button.setVisible(false);
+        tableReportProperties.clear();
+        rep_table.getItems().clear();
         report_type=1;
     }
     /*@FXML
@@ -2242,11 +2273,15 @@ public class AdminMenuController {
     void SuppliersChoiceButtonOnAction(ActionEvent event) throws IOException, InterruptedException {
         report_type=null;
         rep_label.setText("");
+        rep_abc_col.setVisible(false);
+        rep_abc_qua_col.setVisible(false);
+        rep_mat_col.setVisible(false);
         rep_price_col.setVisible(false);
         rep_rej_col.setVisible(false);
         rep_sup_col.setVisible(false);
         rep_qua_col.setVisible(false);
         rep_table.setVisible(false);
+        rep_pr_rej_col.setVisible(false);
         date_from.setVisible(true);
         date_to.setVisible(true);
         date_from.setValue(null);
@@ -2255,6 +2290,8 @@ public class AdminMenuController {
         show_report.setVisible(true);
         show_diagram.setVisible(false);
         load_button.setVisible(false);
+        tableReportProperties.clear();
+        rep_table.getItems().clear();
         report_type=3;
         mat_report.getItems().clear();
         mat_report.setPromptText("Материал");
@@ -2313,16 +2350,55 @@ public class AdminMenuController {
                     String formattedDateFrom = df.format(formatter);
                     LocalDate dt = date_to.getValue();
                     String formattedDateTo = dt.format(formatter);
-                    String report_string ="Расход материалов за период с "+formattedDateFrom+
-                            " по "+formattedDateTo+" :\n";
-                    for (int i=0; i<report.size();i++){
-                     //   report_string += report.get(i).getMaterial() +"\t\t"+report.get(i).getQuantity()+"\n";
+
+                    rep_label.setText("ABC анализ расхода материалов за период с " +formattedDateFrom+
+                            " по "+formattedDateTo);
+                    rep_mat_col.setVisible(true);
+                    rep_abc_col.setVisible(true);
+                    rep_abc_qua_col.setVisible(true);
+                    rep_perc_col.setVisible(true);
+                    rep_tot_pr_col.setVisible(true);
+                    rep_table.setVisible(true);
+                    rep_table.setStyle(" -fx-font-size: 18 px;");
+                    rep_abc_col.setStyle("-fx-alignment: CENTER;");
+                    rep_abc_qua_col.setStyle("-fx-alignment: CENTER;");
+                    rep_perc_col.setStyle("-fx-alignment: CENTER;");
+                    rep_tot_pr_col.setStyle("-fx-alignment: CENTER;");
+
+                    rep_mat_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getMaterial()));
+                    rep_abc_qua_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getTotal_quantity()).asObject());
+                    rep_abc_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getAbc()));
+                    rep_perc_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getPercent()));
+                    rep_tot_pr_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getTotal_perc()));
+
+                    for (ReportWO reportWO1 : report) {
+                        ReportWOProperty e = new ReportWOProperty(reportWO1);
+                        tableReportProperties.add(e);
                     }
-                    rep_label.setText(report_string);
-                    show_diagram.setVisible(true);
+                    rep_table.setItems(tableReportProperties);
+                    rep_table.setRowFactory(tv -> new TableRow<ReportWOProperty>() {
+                        protected void updateItem(ReportWOProperty item, boolean empty) {
+                            super.updateItem(item, empty);
+                            setStyle("");
+                            pseudoClassStateChanged(a,false);
+                            pseudoClassStateChanged(b,false);
+                            pseudoClassStateChanged(c,false);
+                            if (item == null )
+                                setStyle("");
+                            else if (Objects.equals(item.getAbc(), "A")) {
+                                setStyle("-fx-background-color: #DCFFDC;");
+                                pseudoClassStateChanged(a,true);
+                            } else if (Objects.equals(item.getAbc(), "B")) {
+                                setStyle("-fx-background-color: #fffcdc;");
+                                pseudoClassStateChanged(b,true);
+                            } else if (Objects.equals(item.getAbc(), "C")) {
+                                setStyle("-fx-background-color: #FFDCDC;");
+                                pseudoClassStateChanged(c,true);
+                            }
+                        }
+                    });
                     load_button.setVisible(true);
                     for_report=null;
-                    for_report=report_string;
                 }
             }
         }
@@ -2367,9 +2443,15 @@ public class AdminMenuController {
                         rep_rej_col.setVisible(true);
                         rep_sup_col.setVisible(true);
                         rep_qua_col.setVisible(true);
+                        rep_pr_rej_col.setVisible(true);
                         rep_table.setVisible(true);
-                        rep_table.setStyle(" -fx-font-size: 16 px;");
+                        rep_table.setStyle(" -fx-font-size: 18 px;");
+                        rep_price_col.setStyle("-fx-alignment: CENTER;");
+                        rep_rej_col.setStyle("-fx-alignment: CENTER;");
+                        rep_qua_col.setStyle("-fx-alignment: CENTER;");
+                        rep_pr_rej_col.setStyle("-fx-alignment: CENTER;");
 
+                        rep_pr_rej_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getPercent()));
                         rep_price_col.setCellValueFactory(field -> new SimpleFloatProperty(field.getValue().getAvg_item_price()).asObject());
                         rep_rej_col.setCellValueFactory(field -> new SimpleIntegerProperty(field.getValue().getRejected()).asObject());
                         rep_sup_col.setCellValueFactory(field -> new SimpleStringProperty(field.getValue().getSupplier()));
@@ -2380,18 +2462,8 @@ public class AdminMenuController {
                             tableReportProperties.add(e);
                         }
                         rep_table.setItems(tableReportProperties);
-
-                        /*String report_string ="Закупочная стоимость материала "+mat_report.getValue()+
-                                " у различных поставщиков:\n";
-                        for (int i=0; i<report.size();i++){
-                            report_string += report.get(i).getSupplier() +"\t\t"+report.get(i).getTotal_quantity()+
-                                    "\t\t"+report.get(i).getAvg_item_price()+"\t\t"+report.get(i).getRejected()+"\n";
-                        }*/
-                       // report_text.setText(report_string);
                         show_diagram.setVisible(true);
                         load_button.setVisible(true);
-                        for_report=null;
-                      //  for_report=report_string;
                     }
             }
             }
@@ -2455,7 +2527,7 @@ public class AdminMenuController {
     }
     @FXML
     void ShowDiagramButtonOnAction(ActionEvent event) {
-        if(report_type==1){
+      /*  if(report_type==1){
         Stage stage = new Stage();
         CategoryAxis x = new CategoryAxis();
         x.setLabel("Материалы");
@@ -2473,7 +2545,7 @@ public class AdminMenuController {
         stage.setHeight(500);
         stage.setWidth(900);
         stage.show();
-        } else if (report_type==3) {
+        } else */if (report_type==3) {
             Stage stage = new Stage();
             CategoryAxis xAxis = new CategoryAxis();
             NumberAxis yAxis = new NumberAxis();
@@ -2512,7 +2584,7 @@ public class AdminMenuController {
             stage.setHeight(500);
             stage.setWidth(900);
             stage.show();*/
-        }else if (report_type==2) {
+        }/*else if (report_type==2) {
             Stage stage = new Stage();
             CategoryAxis x = new CategoryAxis();
             x.setLabel("Материалы");
@@ -2534,7 +2606,7 @@ public class AdminMenuController {
             stage.setHeight(500);
             stage.setWidth(900);
             stage.show();
-        }
+        }*/
     }
     @FXML
     void LoadButtonOnAction(ActionEvent event) throws IOException {
@@ -2576,6 +2648,31 @@ public class AdminMenuController {
             controller.initialize(table_materials.getSelectionModel().getSelectedItem().getId(), table_materials.getSelectionModel().getSelectedItem().getNumber());
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.show();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setContentText("Выберите строку!");
+            alert.showAndWait();
+        }
+    }
+    @FXML
+    void AktButtonOnAction(ActionEvent event) {
+        if (!table_po.getSelectionModel().isEmpty()){
+            XWPFDocument document = new XWPFDocument();
+            XWPFParagraph paragraph = document.createParagraph();
+            XWPFRun run = paragraph.createRun();
+            run.setText("Привет, мир!");
+            try (FileOutputStream out = new FileOutputStream("example.docx")) {
+                document.write(out);
+
+                Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
+                alert3.setTitle("ОК");
+                alert3.setHeaderText(null);
+                alert3.setContentText("Акт списания материалов в производство по заказу "+table_po.getSelectionModel().getSelectedItem().getId()+" загружен.");
+                alert3.showAndWait();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);

@@ -322,7 +322,7 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #fff;">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="218.0" layoutX="1199.0" layoutY="480.0" stroke="GREY" strokeType="INSIDE" width="300.0" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="318.0" layoutX="1199.0" layoutY="380.0" stroke="GREY" strokeType="INSIDE" width="300.0" />
                         <TextField fx:id="search_field_po" layoutX="23.0" layoutY="24.0" promptText="Поиск">
                            <font>
                               <Font size="14.0" />
@@ -330,10 +330,11 @@
                         </TextField>
                         <TableView fx:id="table_po" editable="true" layoutX="23.0" layoutY="62.0" onMouseClicked="#POTableMouseClicked" prefHeight="635.0" prefWidth="1150.0">
                            <columns>
-                              <TableColumn fx:id="mat_po_col" prefWidth="286.0" text="Материал" />
-                              <TableColumn fx:id="date_po_col" prefWidth="286.0" text="Дата" />
-                              <TableColumn fx:id="quant_po_col" prefWidth="286.0" text="Количество" />
-                              <TableColumn fx:id="rej_po_col" prefWidth="286.0" text="Брак" />
+                              <TableColumn fx:id="order_col" prefWidth="230.0" text="Заявка" />
+                              <TableColumn fx:id="mat_po_col" prefWidth="230.0" text="Материал" />
+                              <TableColumn fx:id="date_po_col" prefWidth="230.0" text="Дата" />
+                              <TableColumn fx:id="quant_po_col" prefWidth="230.0" text="Количество" />
+                              <TableColumn fx:id="rej_po_col" prefWidth="230.0" text="Брак" />
                            </columns>
                         </TableView>
                         <Button fx:id="delete_po" layoutX="23.0" layoutY="712.0" mnemonicParsing="false" onAction="#DeleteProductionOrderButtonOnAction" prefHeight="40.0" prefWidth="180.0" text="Удалить" textFill="WHITE">
@@ -341,7 +342,7 @@
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="wrire_off" layoutX="1214.0" layoutY="594.0" mnemonicParsing="false" onAction="#WriteOffButtonOnAction" prefHeight="40.0" prefWidth="270.0" text="Списать" textFill="WHITE">
+                        <Button fx:id="wrire_off" layoutX="1214.0" layoutY="494.0" mnemonicParsing="false" onAction="#WriteOffButtonOnAction" prefHeight="40.0" prefWidth="270.0" text="Списать" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
@@ -366,12 +367,12 @@
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="add_reject" layoutX="1214.0" layoutY="712.0" mnemonicParsing="false" onAction="#AddRejectedMaterialButtonOnAction" prefHeight="40.0" prefWidth="270.0" text="Бракованные позиции" textFill="WHITE">
+                        <Button fx:id="add_reject" layoutX="1214.0" layoutY="594.0" mnemonicParsing="false" onAction="#AddRejectedMaterialButtonOnAction" prefHeight="40.0" prefWidth="270.0" text="Бракованные позиции" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="back_write" layoutX="1214.0" layoutY="644.0" mnemonicParsing="false" onAction="#BackWriteButtonOnAction" prefHeight="40.0" prefWidth="270.0" text="Отменить списание" textFill="WHITE">
+                        <Button fx:id="back_write" layoutX="1214.0" layoutY="544.0" mnemonicParsing="false" onAction="#BackWriteButtonOnAction" prefHeight="40.0" prefWidth="270.0" text="Отменить списание" textFill="WHITE">
                            <font>
                               <Font size="16.0" />
                            </font>
@@ -387,7 +388,7 @@
                         <ImageView fx:id="green" fitHeight="20.0" fitWidth="20.0" layoutX="1114.0" layoutY="37.0" pickOnBounds="true" preserveRatio="true" />
                         <ImageView fx:id="blue" fitHeight="20.0" fitWidth="20.0" layoutX="1082.0" layoutY="37.0" pickOnBounds="true" preserveRatio="true" />
                         <Label fx:id="label113" layoutX="1199.0" layoutY="70.0" nodeOrientation="LEFT_TO_RIGHT" text="Форма добавления:" />
-                        <RadioButton fx:id="each_rb" layoutX="1214.0" layoutY="552.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="270.0" text="По себестоимости каждой единицы">
+                        <RadioButton fx:id="each_rb" layoutX="1214.0" layoutY="452.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="270.0" text="По себестоимости каждой единицы">
                            <toggleGroup>
                               <ToggleGroup fx:id="write_off" />
                            </toggleGroup>
@@ -395,16 +396,21 @@
                               <Font size="12.5" />
                            </font>
                         </RadioButton>
-                        <RadioButton fx:id="mid_rb" layoutX="1214.0" layoutY="521.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="270.0" text="По средней себестоимости" toggleGroup="$write_off">
+                        <RadioButton fx:id="mid_rb" layoutX="1214.0" layoutY="421.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="270.0" text="По средней себестоимости" toggleGroup="$write_off">
                            <font>
                               <Font size="13.0" />
                            </font>
                         </RadioButton>
-                        <RadioButton fx:id="fifo_rb" layoutX="1214.0" layoutY="490.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="270.0" text="FIFO" toggleGroup="$write_off">
+                        <RadioButton fx:id="fifo_rb" layoutX="1214.0" layoutY="390.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="270.0" text="FIFO" toggleGroup="$write_off">
                            <font>
                               <Font size="13.0" />
                            </font>
                         </RadioButton>
+                        <Button fx:id="akt_button" layoutX="1214.0" layoutY="644.0" mnemonicParsing="false" onAction="#AktButtonOnAction" prefHeight="40.0" prefWidth="270.0" text="Акт списания материалов" textFill="WHITE">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Button>
                      </children>
                   </AnchorPane>
                </content>
@@ -428,28 +434,31 @@
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <DatePicker fx:id="date_from" layoutX="31.0" layoutY="161.0" prefHeight="38.0" prefWidth="235.0" promptText="Дата c" style="-fx-font-size: 16;" visible="false" />
-                        <DatePicker fx:id="date_to" layoutX="31.0" layoutY="211.0" prefHeight="38.0" prefWidth="235.0" promptText="Дата по" style="-fx-font-size: 16;" visible="false" />
-                        <Button fx:id="show_diagram" layoutX="31.0" layoutY="365.0" mnemonicParsing="false" onAction="#ShowDiagramButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Диаграмма" textFill="WHITE" visible="false">
+                        <DatePicker fx:id="date_from" layoutX="32.0" layoutY="136.0" prefHeight="38.0" prefWidth="235.0" promptText="Дата c" style="-fx-font-size: 16;" visible="false" />
+                        <DatePicker fx:id="date_to" layoutX="32.0" layoutY="186.0" prefHeight="38.0" prefWidth="235.0" promptText="Дата по" style="-fx-font-size: 16;" visible="false" />
+                        <Button fx:id="show_diagram" layoutX="31.0" layoutY="415.0" mnemonicParsing="false" onAction="#ShowDiagramButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Диаграмма" textFill="WHITE" visible="false">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="load_button" layoutX="31.0" layoutY="415.0" mnemonicParsing="false" onAction="#LoadButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Скачать" textFill="WHITE" visible="false">
+                        <Button fx:id="load_button" layoutX="31.0" layoutY="365.0" mnemonicParsing="false" onAction="#LoadButtonOnAction" prefHeight="40.0" prefWidth="235.0" text="Скачать" textFill="WHITE" visible="false">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <ComboBox fx:id="mat_report" layoutX="32.0" layoutY="263.0" prefHeight="38.0" prefWidth="235.0" promptText="Материал" style="-fx-font-size: 16;" visible="false" />
+                        <ComboBox fx:id="mat_report" layoutX="33.0" layoutY="238.0" prefHeight="38.0" prefWidth="235.0" promptText="Материал" style="-fx-font-size: 16;" visible="false" />
                         <TableView fx:id="rep_table" layoutX="342.0" layoutY="66.0" prefHeight="694.0" prefWidth="1180.0" visible="false">
                           <columns>
-                            <TableColumn fx:id="rep_sup_col" prefWidth="295.0" text="Поставщик" visible="false" />
-                            <TableColumn fx:id="rep_qua_col" prefWidth="295.0" text="Общее кол-во материала" visible="false" />
-                              <TableColumn fx:id="rep_price_col" prefWidth="295.0" text="Средняя стоимость за ед." visible="false" />
-                              <TableColumn fx:id="rep_rej_col" prefWidth="295.0" text="Общее кол-во брака" visible="false" />
-                              <TableColumn fx:id="rep_mat_col" prefWidth="393.0" text="Материал" visible="false" />
-                              <TableColumn fx:id="rep_abc_qua_col" prefWidth="394.0" text="Количество" visible="false" />
-                              <TableColumn fx:id="rep_abc_col" prefWidth="394.0" text="Класс" visible="false" />
+                            <TableColumn fx:id="rep_sup_col" prefWidth="236.0" text="Поставщик" visible="false" />
+                            <TableColumn fx:id="rep_qua_col" prefWidth="256.0" text="Общ. кол-во материала" visible="false" />
+                              <TableColumn fx:id="rep_price_col" prefWidth="256.0" text="Ср. стоимость за ед." visible="false" />
+                              <TableColumn fx:id="rep_rej_col" prefWidth="226.0" text="Общее кол-во брака" visible="false" />
+                              <TableColumn fx:id="rep_mat_col" prefWidth="236.0" text="Материал" visible="false" />
+                              <TableColumn fx:id="rep_abc_qua_col" prefWidth="236.0" text="Количество" visible="false" />
+                              <TableColumn fx:id="rep_abc_col" prefWidth="236.0" text="Класс" visible="false" />
+                              <TableColumn fx:id="rep_perc_col" prefWidth="236.0" text="Доля от общего кол-ва" visible="false" />
+                              <TableColumn fx:id="rep_tot_pr_col" prefWidth="236.0" text="Совокупный %" visible="false" />
+                              <TableColumn fx:id="rep_pr_rej_col" prefWidth="206.0" text="Процент брака" visible="false" />
                           </columns>
                         </TableView>
                         <Label fx:id="rep_label" layoutX="344.0" layoutY="25.0" prefHeight="38.0" prefWidth="1175.0" wrapText="true">

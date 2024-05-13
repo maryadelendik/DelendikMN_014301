@@ -209,11 +209,12 @@
     -fx-text-fill: white;
 }*/
 .table-view {
-    -fx-border-color: transparent;
+    /*-fx-border-color: transparent;*/
     -fx-background-color: transparent;
     -fx-text-fill: black;
     -fx-font-size: 14 px;
-
+    -fx-border-width: 0.5px;
+    -fx-border-color: #2C3E50;
 }
 /*.table-view .corner {
     -fx-background-color: transparent;
@@ -223,7 +224,6 @@
     -fx-text-fill: black;
    /* -fx-border-color: transparent #ABB2B9 #ABB2B9 #ABB2B9, transparent;*/
 }
-
 .table-row-cell:empty {
     -fx-background-color: transparent;
 }
@@ -251,12 +251,24 @@
     -fx-background-color: #ff9696 !important;
     -fx-text-fill: black;
 }
+.table-row-cell:b:hover {
+    -fx-background-color: #fffc96 !important;
+    -fx-text-fill: black;
+}
+.table-row-cell:c:hover {
+    -fx-background-color: #ff9696 !important;
+    -fx-text-fill: black;
+}
 .table-row-cell:reject:hover {
     -fx-background-color: #ff9696 !important;
     -fx-text-fill: black;
 }
 .table-row-cell:closed:hover {
     -fx-background-color: #6ed36e !important;
+    -fx-text-fill: black;
+}
+.table-row-cell:a:hover {
+    -fx-background-color: #96ff96 !important;
     -fx-text-fill: black;
 }
 .table-row-cell:hover {

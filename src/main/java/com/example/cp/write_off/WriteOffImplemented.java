@@ -347,6 +347,7 @@ public class WriteOffImplemented implements WriteOff {
                 report_fill.setTotal_quantity(resultSet.getInt(2));
                 report_fill.setAvg_item_price(resultSet.getFloat(3));
                 report_fill.setRejected(resultSet.getInt(4));
+                report_fill.setPercent( String.format("%.2f", (float) resultSet.getInt(4) /resultSet.getInt(2) *100).replace(',', '.') + " %");
                 report.add(report_fill);
             }
         } catch (SQLException e) {
@@ -378,6 +379,7 @@ public class WriteOffImplemented implements WriteOff {
                 ReportWO report_fill = new ReportWO();
                 report_fill.setMaterial(resultSet.getString(1));
                 report_fill.setTotal_quantity(resultSet.getInt(2));
+                report_fill.setPercent(String.format("%.2f", (float) resultSet.getInt(2) /total*100).replace(',', '.')+" %");
                 report_fill.setAvg_item_price( Float.parseFloat(String.format("%.2f", (float) resultSet.getInt(2) /total*100).replace(',', '.')));
                 report.add(report_fill);
                 report.sort(Comparator.comparing(ReportWO::getAvg_item_price).reversed());
@@ -385,6 +387,7 @@ public class WriteOffImplemented implements WriteOff {
             Float total_percent = (float) 0;
             for (int i = 0; i<report.size();i++){
                 total_percent += report.get(i).getAvg_item_price();
+                report.get(i).setTotal_perc(String.format("%.2f", total_percent).replace(',', '.')+" %");
                 if (total_percent<80) {
                     report.get(i).setAbc("A");
                 } else if (total_percent>=80 && total_percent<=95) {
@@ -393,7 +396,7 @@ public class WriteOffImplemented implements WriteOff {
                     report.get(i).setAbc("C");
                 }
             }
-          report.sort(Comparator.comparing(ReportWO::getAbc));
+          report.sort(Comparator.comparing(ReportWO::getAvg_item_price).reversed());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

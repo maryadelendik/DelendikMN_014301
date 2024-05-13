@@ -17,6 +17,8 @@ public class ReportWOProperty {
     private final SimpleStringProperty date_from;
     private final SimpleStringProperty supplier;
     private final SimpleStringProperty abc;
+    private final SimpleStringProperty percent;
+    private final SimpleStringProperty total_perc;
 
 
     public ReportWOProperty(ReportWO reportWO) {
@@ -30,6 +32,32 @@ public class ReportWOProperty {
         supplier = new SimpleStringProperty(reportWO.getSupplier());
         avg_item_price = new SimpleFloatProperty(reportWO.getAvg_item_price());
         abc = new SimpleStringProperty(reportWO.getAbc());
+        percent = new SimpleStringProperty(reportWO.getPercent());
+        total_perc = new SimpleStringProperty(reportWO.getTotal_perc());
+    }
+
+    public String getPercent() {
+        return percent.get();
+    }
+
+    public SimpleStringProperty percentProperty() {
+        return percent;
+    }
+
+    public void setPercent(String percent) {
+        this.percent.set(percent);
+    }
+
+    public String getTotal_perc() {
+        return total_perc.get();
+    }
+
+    public SimpleStringProperty total_percProperty() {
+        return total_perc;
+    }
+
+    public void setTotal_perc(String total_perc) {
+        this.total_perc.set(total_perc);
     }
 
     public String getAbc() {

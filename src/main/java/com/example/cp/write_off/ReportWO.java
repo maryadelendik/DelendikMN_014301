@@ -14,8 +14,10 @@ public class ReportWO implements Serializable{
     private String date_to;
     private String date_from;
     private String abc;
+    private String percent;
+    private String total_perc;
 
-    public ReportWO(String material, Integer id_material, String supplier, Integer total_quantity, Float avg_item_price, String lot, Integer rejected, String date_to, String date_from, String abc) {
+    public ReportWO(String material, Integer id_material, String supplier, Integer total_quantity, Float avg_item_price, String lot, Integer rejected, String date_to, String date_from, String abc, String percent, String total_perc) {
         this.material = material;
         this.id_material = id_material;
         this.supplier = supplier;
@@ -26,10 +28,28 @@ public class ReportWO implements Serializable{
         this.date_to = date_to;
         this.date_from = date_from;
         this.abc = abc;
+        this.percent = percent;
+        this.total_perc = total_perc;
     }
 
     public ReportWO() {
 
+    }
+
+    public String getPercent() {
+        return percent;
+    }
+
+    public void setPercent(String percent) {
+        this.percent = percent;
+    }
+
+    public String getTotal_perc() {
+        return total_perc;
+    }
+
+    public void setTotal_perc(String total_perc) {
+        this.total_perc = total_perc;
     }
 
     public String getMaterial() {
@@ -73,11 +93,11 @@ public class ReportWO implements Serializable{
     }
 
     public Float getAvg_item_price() {
-        return avg_item_price;
+        return Objects.requireNonNullElse(avg_item_price, 0f);
     }
 
     public void setAvg_item_price(Float avg_item_price) {
-        this.avg_item_price = avg_item_price;
+        this.avg_item_price = Objects.requireNonNullElse(avg_item_price, 0f);
     }
 
     public String getLot() {
@@ -89,11 +109,11 @@ public class ReportWO implements Serializable{
     }
 
     public Integer getRejected() {
-        return rejected;
+        return Objects.requireNonNullElse(rejected, 0);
     }
 
     public void setRejected(Integer rejected) {
-        this.rejected = rejected;
+        this.rejected = Objects.requireNonNullElse(rejected, 0);
     }
 
     public String getDate_to() {
@@ -125,6 +145,8 @@ public class ReportWO implements Serializable{
                 ", date_to='" + date_to + '\'' +
                 ", date_from='" + date_from + '\'' +
                 ", abc='" + abc + '\'' +
+                ", percent='" + percent + '\'' +
+                ", total_perc='" + total_perc + '\'' +
                 '}';
     }
 }
