@@ -1,6 +1,8 @@
 package com.example.cp.write_off;
 
 
+import com.aspose.words.FindReplaceDirection;
+import com.aspose.words.FindReplaceOptions;
 import com.example.cp.DatabaseConnection;
 import com.example.cp.materials.MaterialsDB;
 import com.example.cp.prices.Prices;
@@ -9,8 +11,18 @@ import com.example.cp.prices.PricesImplemented;
 import com.example.cp.production_orders.ProductionOrdersDB;
 import com.example.cp.production_orders.Report;
 import com.example.cp.supply_documents.SupplyDocumentsDB;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xwpf.usermodel.*;
+import org.apache.xmlbeans.XmlCursor;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import java.io.*;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -347,7 +359,7 @@ public class WriteOffImplemented implements WriteOff {
                 report_fill.setTotal_quantity(resultSet.getInt(2));
                 report_fill.setAvg_item_price(resultSet.getFloat(3));
                 report_fill.setRejected(resultSet.getInt(4));
-                report_fill.setPercent( String.format("%.2f", (float) resultSet.getInt(4) /resultSet.getInt(2) *100).replace(',', '.') + " %");
+                report_fill.setPercent( String.format("%.2f", (float) resultSet.getInt(4) /resultSet.getInt(2) * 100).replace(',', '.') + " %");
                 report.add(report_fill);
             }
         } catch (SQLException e) {
@@ -401,6 +413,103 @@ public class WriteOffImplemented implements WriteOff {
             throw new RuntimeException(e);
         }
         return report;
+    }
+
+    @Override
+    public void ABCXlsx(ReportWO reportWO) {
+        ArrayList<ReportWO> report = ABCReport(reportWO);
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFSheet sheet = workbook.createSheet("Лист 1");
+            CellStyle centerAlignStyle = workbook.createCellStyle();
+            centerAlignStyle.setAlignment(HorizontalAlignment.CENTER);
+            Object[][] data = new Object[report.size()+1][5];
+            data[0][0] = "Материал";
+            data[0][1] = "Количество";
+            data[0][2] = "Класс";
+            data[0][3] = "Доля от общего кол-ва";
+            data[0][4] = "Совокупный процент";
+            for (int i=1; i< report.size()+1; i++){
+                data[i][0] = report.get(i-1).getMaterial();
+                data[i][1] = report.get(i-1).getTotal_quantity();
+                data[i][2] = report.get(i-1).getAbc();
+                data[i][3] = report.get(i-1).getPercent();
+                data[i][4] = report.get(i-1).getTotal_perc();
+            }
+
+            int rowNum = 0;
+            for (Object[] rowData : data) {
+                XSSFRow row = sheet.createRow(rowNum++);
+                int colNum = 0;
+                for (Object field : rowData) {
+                    XSSFCell cell = row.createCell(colNum++);
+                    if (field instanceof String) {
+                        cell.setCellValue((String) field);
+                    } else if (field instanceof Integer) {
+                        cell.setCellStyle(centerAlignStyle);
+                        cell.setCellValue((Integer) field);
+
+                    }
+                }
+            }
+            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(1);
+            sheet.autoSizeColumn(2);
+            sheet.autoSizeColumn(3);
+            sheet.autoSizeColumn(4);
+            try (FileOutputStream outputStream = new FileOutputStream("ABC анализ.xlsx")) {
+                workbook.write(outputStream);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void SuppliersXlsx(ReportWO reportWO) {
+        ArrayList<ReportWO> report = suppliersReport(reportWO);
+        System.out.println(report);
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFSheet sheet = workbook.createSheet("Лист 1");
+            CellStyle centerAlignStyle = workbook.createCellStyle();
+            centerAlignStyle.setAlignment(HorizontalAlignment.CENTER);
+            Object[][] data = new Object[report.size()+1][5];
+            data[0][0] = "Поставщик";
+            data[0][1] = "Общее количество материала";
+            data[0][2] = "Средняя стоимость за единицу";
+            data[0][3] = "Общее количество брака";
+            data[0][4] = "Процент брака";
+            for (int i=1; i< report.size()+1; i++){
+                data[i][0] = report.get(i-1).getSupplier();
+                data[i][1] = report.get(i-1).getTotal_quantity();
+                data[i][2] = String.valueOf(report.get(i-1).getAvg_item_price());
+                data[i][3] = report.get(i-1).getRejected();
+                data[i][4] = report.get(i-1).getPercent();
+            }
+            int rowNum = 0;
+            for (Object[] rowData : data) {
+                XSSFRow row = sheet.createRow(rowNum++);
+                int colNum = 0;
+                for (Object field : rowData) {
+                    XSSFCell cell = row.createCell(colNum++);
+                    if (field instanceof String) {
+                        cell.setCellValue((String) field);
+                    } else if (field instanceof Integer) {
+                        cell.setCellValue((Integer) field);
+                        cell.setCellStyle(centerAlignStyle);
+                    }
+                }
+            }
+            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(1);
+            sheet.autoSizeColumn(2);
+            sheet.autoSizeColumn(3);
+            sheet.autoSizeColumn(4);
+            try (FileOutputStream outputStream = new FileOutputStream("Анализ поставщиков.xlsx")) {
+                workbook.write(outputStream);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public Integer findIdSupplier(String name) {/*
@@ -688,5 +797,326 @@ public class WriteOffImplemented implements WriteOff {
             throw new RuntimeException(e);
         }
         deleteById(productionOrdersDB.getId());
+    }
+
+    @Override
+    public void print(Integer id) throws IOException, ParseException {
+        List<WriteOffDB> list = new ArrayList<WriteOffDB>();
+       String date1 = null;
+       Float total_price = 0f;
+       String type = "";
+        String month = "SELECT WO.quantity, WO.date, WO.price_item, WO.total_price, WO.type, M.name, M.number, M.unit, SD.lot FROM warehouse.write_off WO INNER JOIN \n" +
+                "warehouse.supply_documents SD ON SD.id=WO.lot_material INNER JOIN\n" +
+                "warehouse.material_supplier MS ON MS.id=SD.mat_sup INNER JOIN\n" +
+                "warehouse.materials M ON M.id=MS.material WHERE \n" +
+                "WO.production_order = " + id;
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(month);
+            while (resultSet.next() ) {
+                WriteOffDB writeOffDB = new WriteOffDB();
+                writeOffDB.setQuantity(resultSet.getInt(1));
+                writeOffDB.setPrice_item(resultSet.getFloat(3));
+                writeOffDB.setTotal_price(resultSet.getFloat(4));
+                writeOffDB.setLot(resultSet.getString(9));
+                writeOffDB.setName_material(resultSet.getString(6));
+                writeOffDB.setNumber_material(resultSet.getString(7));
+                writeOffDB.setUnit_material(resultSet.getString(8));
+              date1 = resultSet.getString(2);
+              total_price += resultSet.getFloat(4);
+              type = resultSet.getString(5);
+              list.add(writeOffDB);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        InputStream templateStream = new FileInputStream("template.docx");
+        XWPFDocument document = new XWPFDocument(templateStream);
+
+        SimpleDateFormat oldDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat newDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+        java.util.Date date = oldDateFormat.parse(date1);
+        String result = newDateFormat.format(date);
+
+        for (XWPFParagraph paragraph : document.getParagraphs()) {
+            int numberOfRuns = paragraph.getRuns().size();
+            StringBuilder sb = new StringBuilder();
+            for (XWPFRun r : paragraph.getRuns()){
+                int pos = r.getTextPosition();
+                if(r.getText(pos) != null) {
+                    sb.append(r.getText(pos));
+                }
+            }
+            if(sb.length() > 0 && sb.toString().contains("{{TABLE_PLACEHOLDER}}")) {
+                for(int i = 0; i < numberOfRuns; i++) {
+                    paragraph.removeRun(i);
+                }
+                String text = sb.toString().replace("{{TABLE_PLACEHOLDER}}", "");
+                XWPFRun run = paragraph.createRun();
+                run.setText(text);
+                paragraph.addRun(run);
+                XmlCursor cursor = paragraph.getCTP().newCursor();//this is the key!
+                XWPFTable table = document.insertNewTbl(cursor);
+                for (int i =0; i < 6; i++) {
+                    table.addNewCol();
+                }
+                int heightInTwips = (int) (0.8f * 566.9);
+                XWPFTableRow tableRow1 = table.getRow(0);
+                tableRow1.setHeight(heightInTwips);
+                XWPFTableCell cell1 = table.getRow(0).getCell(0);
+                XWPFTableCell cell2 = table.getRow(0).getCell(1);
+                XWPFTableCell cell3 = tableRow1.getCell(2);
+                XWPFTableCell cell4 = tableRow1.getCell(3);
+                XWPFTableCell cell5 = tableRow1.getCell(4);
+                XWPFTableCell cell6 = tableRow1.getCell(5);
+                XWPFTableCell cell7 = tableRow1.getCell(6);
+                cell1.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                paragraph.setAlignment(ParagraphAlignment.CENTER);
+                cell1.setText("Наименование");
+                XWPFParagraph p1 = cell1.getParagraphs().get(0);
+                p1.setAlignment(ParagraphAlignment.CENTER);
+                cell2.setText("Номенклатурный номер");
+                XWPFParagraph p2 = cell2.getParagraphs().get(0);
+                p2.setAlignment(ParagraphAlignment.CENTER);
+                cell2.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                cell3.setText("Ед. изм.");
+                XWPFParagraph p3 = cell3.getParagraphs().get(0);
+                p3.setAlignment(ParagraphAlignment.CENTER);
+                cell3.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                cell4.setText("Кол-во");
+                XWPFParagraph p4 = cell4.getParagraphs().get(0);
+                p4.setAlignment(ParagraphAlignment.CENTER);
+                cell4.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                cell5.setText("Цена, руб.");
+                XWPFParagraph p5 = cell5.getParagraphs().get(0);
+                p5.setAlignment(ParagraphAlignment.CENTER);
+                cell5.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                cell6.setText("Сумма, руб.");
+                XWPFParagraph p6 = cell6.getParagraphs().get(0);
+                p6.setAlignment(ParagraphAlignment.CENTER);
+                cell6.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                cell7.setText("Партия");
+                XWPFParagraph p7 = cell7.getParagraphs().get(0);
+                p7.setAlignment(ParagraphAlignment.CENTER);
+                cell7.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+
+                XWPFTableRow tableRow2 = table.createRow();
+
+                tableRow2.setHeight(heightInTwips);
+                XWPFTableCell cell21 = tableRow2.getCell(0);
+                XWPFTableCell cell22 = tableRow2.getCell(1);
+                XWPFTableCell cell23 = tableRow2.getCell(2);
+                XWPFTableCell cell24 = tableRow2.getCell(3);
+                XWPFTableCell cell25 = tableRow2.getCell(4);
+                XWPFTableCell cell26 = tableRow2.getCell(5);
+                XWPFTableCell cell27 = tableRow2.getCell(6);
+                cell21.setText("1");
+                XWPFParagraph p21 = cell21.getParagraphs().get(0);
+                p21.setAlignment(ParagraphAlignment.CENTER);
+                cell21.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                cell22.setText("2");
+                XWPFParagraph p22 = cell22.getParagraphs().get(0);
+                p22.setAlignment(ParagraphAlignment.CENTER);
+                cell22.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                cell23.setText("3");
+                XWPFParagraph p23 = cell23.getParagraphs().get(0);
+                p23.setAlignment(ParagraphAlignment.CENTER);
+                cell23.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                cell24.setText("4");
+                XWPFParagraph p24 = cell24.getParagraphs().get(0);
+                p24.setAlignment(ParagraphAlignment.CENTER);
+                cell24.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                cell25.setText("5");
+                XWPFParagraph p25 = cell25.getParagraphs().get(0);
+                p25.setAlignment(ParagraphAlignment.CENTER);
+                cell25.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                cell26.setText("6");
+                XWPFParagraph p26 = cell26.getParagraphs().get(0);
+                p26.setAlignment(ParagraphAlignment.CENTER);
+                cell26.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                cell27.setText("7");
+                XWPFParagraph p27 = cell27.getParagraphs().get(0);
+                p27.setAlignment(ParagraphAlignment.CENTER);
+                cell27.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                for (int row = 2; row < list.size()+2; row++) {
+                    XWPFTableRow tableRow = table.createRow();
+                    tableRow.setHeight(heightInTwips);
+                    XWPFTableCell cell01 = tableRow.getCell(0);
+                    XWPFTableCell cell02 = tableRow.getCell(1);
+                    XWPFTableCell cell03 = tableRow.getCell(2);
+                    XWPFTableCell cell04 = tableRow.getCell(3);
+                    XWPFTableCell cell05 = tableRow.getCell(4);
+                    XWPFTableCell cell06 = tableRow.getCell(5);
+                    XWPFTableCell cell07 = tableRow.getCell(6);
+                    cell01.setText(list.get(row-2).getName_material());
+                    cell01.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                    cell02.setText(list.get(row-2).getNumber_material());
+                    XWPFParagraph p02 = cell02.getParagraphs().get(0);
+                    p02.setAlignment(ParagraphAlignment.CENTER);
+                    cell02.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                    cell03.setText(list.get(row-2).getUnit_material());
+                    XWPFParagraph p03 = cell03.getParagraphs().get(0);
+                    p03.setAlignment(ParagraphAlignment.CENTER);
+                    cell03.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                    cell04.setText(String.valueOf(list.get(row-2).getQuantity()));
+                    XWPFParagraph p04 = cell04.getParagraphs().get(0);
+                    p04.setAlignment(ParagraphAlignment.CENTER);
+                    cell04.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                    cell05.setText(String.valueOf(list.get(row-2).getPrice_item()));
+                    XWPFParagraph p05 = cell05.getParagraphs().get(0);
+                    p05.setAlignment(ParagraphAlignment.CENTER);
+                    cell05.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                    cell06.setText(String.valueOf(list.get(row-2).getTotal_price()));
+                    XWPFParagraph p06 = cell06.getParagraphs().get(0);
+                    p06.setAlignment(ParagraphAlignment.CENTER);
+                    cell06.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                    cell07.setText(list.get(row-2).getLot());
+                    XWPFParagraph p07 = cell07.getParagraphs().get(0);
+                    p07.setAlignment(ParagraphAlignment.CENTER);
+                    cell07.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                }
+                XWPFTableRow tableRow3 = table.createRow();
+                tableRow3.setHeight(heightInTwips);
+                XWPFTableCell cell31 = tableRow3.getCell(0);
+                XWPFTableCell cell32 = tableRow3.getCell(1);
+                XWPFTableCell cell33 = tableRow3.getCell(2);
+                XWPFTableCell cell34 = tableRow3.getCell(3);
+                XWPFTableCell cell35 = tableRow3.getCell(4);
+                XWPFTableCell cell36 = tableRow3.getCell(5);
+                cell31.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.RESTART);
+                cell32.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);
+                cell33.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);
+                cell34.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);
+                cell35.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);
+                cell31.setText("Всего");
+                cell36.setText(String.valueOf(total_price));
+                XWPFParagraph p36 = cell36.getParagraphs().get(0);
+                cell31.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                p36.setAlignment(ParagraphAlignment.CENTER);
+                cell36.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+            }
+        }
+/*
+        XWPFTable table = document.createTable(list.size()+3, 7);
+
+        XWPFTableRow tableRow1 = table.getRow(0);
+        XWPFTableCell cell1 = tableRow1.getCell(0);
+        XWPFTableCell cell2 = tableRow1.getCell(1);
+        XWPFTableCell cell3 = tableRow1.getCell(2);
+        XWPFTableCell cell4 = tableRow1.getCell(3);
+        XWPFTableCell cell5 = tableRow1.getCell(4);
+        XWPFTableCell cell6 = tableRow1.getCell(5);
+        XWPFTableCell cell7 = tableRow1.getCell(6);
+        cell1.setText("Наименование");
+        cell2.setText("Номенклатурный номер");
+        cell3.setText("Ед. изм.");
+        cell4.setText("Кол-во");
+        cell5.setText("Цена, руб.");
+        cell6.setText("Сумма, руб.");
+        cell7.setText("Партия");
+
+        XWPFTableRow tableRow2 = table.getRow(1);
+        XWPFTableCell cell21 = tableRow2.getCell(0);
+        XWPFTableCell cell22 = tableRow2.getCell(1);
+        XWPFTableCell cell23 = tableRow2.getCell(2);
+        XWPFTableCell cell24 = tableRow2.getCell(3);
+        XWPFTableCell cell25 = tableRow2.getCell(4);
+        XWPFTableCell cell26 = tableRow2.getCell(5);
+        XWPFTableCell cell27 = tableRow2.getCell(6);
+        cell21.setText("1");
+        cell22.setText("2");
+        cell23.setText("3");
+        cell24.setText("4");
+        cell25.setText("5");
+        cell26.setText("6");
+        cell27.setText("7");
+        for (int row = 2; row < list.size()+2; row++) {
+            XWPFTableRow tableRow = table.getRow(row);
+            XWPFTableCell cell01 = tableRow.getCell(0);
+            XWPFTableCell cell02 = tableRow.getCell(1);
+            XWPFTableCell cell03 = tableRow.getCell(2);
+            XWPFTableCell cell04 = tableRow.getCell(3);
+            XWPFTableCell cell05 = tableRow.getCell(4);
+            XWPFTableCell cell06 = tableRow.getCell(5);
+            XWPFTableCell cell07 = tableRow.getCell(6);
+            cell01.setText(list.get(row-2).getName_material());
+            cell02.setText(list.get(row-2).getNumber_material());
+            cell03.setText(list.get(row-2).getUnit_material());
+            cell04.setText(String.valueOf(list.get(row-2).getQuantity()));
+            cell05.setText(String.valueOf(list.get(row-2).getPrice_item()));
+            cell06.setText(String.valueOf(list.get(row-2).getTotal_price()));
+            cell07.setText(list.get(row-2).getLot());
+        }
+
+        XWPFTableRow tableRow3 = table.getRow(list.size()+2);
+        XWPFTableCell cell31 = tableRow3.getCell(0);
+        XWPFTableCell cell35 = tableRow3.getCell(5);
+        cell31.setText("Всего");
+        cell35.setText(String.valueOf(total_price));
+
+        int pos1 = 0;
+        for (XWPFParagraph paragraph : document.getParagraphs()) {
+            int numberOfRuns = paragraph.getRuns().size();
+            StringBuilder sb = new StringBuilder();
+            for (XWPFRun r : paragraph.getRuns()){
+                int pos = r.getTextPosition();
+                if(r.getText(pos) != null) {
+                    sb.append(r.getText(pos));
+                }
+            }
+            if(sb.length() > 0 && sb.toString().contains("{{TABLE_PLACEHOLDER}}")) {
+                for(int i = 0; i < numberOfRuns; i++) {
+                    paragraph.removeRun(i);
+                }
+                String text = sb.toString().replace("{{TABLE_PLACEHOLDER}}", "");
+                XWPFRun run = paragraph.createRun();
+                run.setText(text);
+                paragraph.addRun(run);
+                XmlCursor cursor = paragraph.getCTP().newCursor();//this is the key!
+                table = document.insertNewTbl(cursor);
+             //   XWPFTableCell cell = t2.getRow(0).getCell(0);
+             //   cell.setText("GOAL!!!");
+              //  XmlCursor cursor = p.getCTP().newCursor();
+             //   paragraph.getBody().insertTable(pos1,table);
+            //    document.removeBodyElement(pos1);
+            //    document.insertTable(pos1,table);
+            }
+        }
+
+*/
+
+        for (int i = 0; i < document.getParagraphs().size(); i++) {
+            XWPFParagraph paragraph = document.getParagraphs().get(i);
+            replacePlaceholder(paragraph, "NUMBER", String.valueOf(id));
+            replacePlaceholder(paragraph, "DATE", result);
+            replacePlaceholder(paragraph, "TYPE", type);
+            replacePlaceholder(paragraph, "TOTAL", String.valueOf(total_price));
+        }
+          /*  List<XWPFRun> runs = paragraph.getRuns();
+            for (int i = 0; i < runs.size(); i++) {
+                XWPFRun run = runs.get(i);
+                String text = run.getText(0);
+                if (text != null && text.contains("{{TABLE_PLACEHOLDER}}")) {
+                    text = text.replace("{{TABLE_PLACEHOLDER}}", "");
+                    run.setText(text, 0);
+                    int pos = document.getPosOfParagraph(paragraph);
+                    document.removeBodyElement(pos);
+                    document.setTable(pos, table);
+                }
+            }
+        }*/
+        FileOutputStream outputStream = new FileOutputStream("Акт списания материалов " + id + ".docx");
+        document.write(outputStream);
+        outputStream.close();
+        document = new XWPFDocument(new FileInputStream("Акт списания материалов " + id + ".docx"));
+    }
+    private static void replacePlaceholder(XWPFParagraph paragraph, String placeholder, String replacement) {
+        for (XWPFRun run : paragraph.getRuns()) {
+            String text = run.getText(0);
+            if (text != null && text.contains(placeholder)) {
+                text = text.replace( placeholder , replacement);
+                run.setText(text, 0);
+            }
+        }
     }
 }

@@ -47,6 +47,20 @@ public class ReportController {
         WriteOff writeOff = new WriteOffImplemented();
         return new ResponseEntity<>(writeOff.ABCReport(reportWO), HttpStatus.OK);
     }
+    @PostMapping ("/abc_xlsx")
+    public ResponseEntity<String> abc_xlsx(@RequestBody ReportWO reportWO) {
+        System.out.println("Выполняется формирование XLSX файла 'ABC анализ расхода материалов'...");
+        WriteOff writeOff = new WriteOffImplemented();
+        writeOff.ABCXlsx(reportWO);
+        return new ResponseEntity<>( HttpStatus.OK);
+    }
+    @PostMapping ("/suppliers_xlsx")
+    public ResponseEntity<String> suppliers_xlsx(@RequestBody ReportWO reportWO) {
+        System.out.println("Выполняется формирование XLSX файла 'Отчёт о поставщиках'...");
+        WriteOff writeOff = new WriteOffImplemented();
+        writeOff.SuppliersXlsx(reportWO);
+        return new ResponseEntity<>( HttpStatus.OK);
+    }
     @GetMapping ("/avg_suppliers")
     public ResponseEntity<ArrayList<Report>> avgSuppliers() {
         System.out.println("Выполняется формирование отчёта о поставщиках...");

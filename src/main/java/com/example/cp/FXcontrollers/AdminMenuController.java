@@ -1,5 +1,7 @@
 package com.example.cp.FXcontrollers;
 
+import com.aspose.words.Document;
+import com.aspose.words.ReportingEngine;
 import com.example.cp.RestClient;
 import com.example.cp.authorization.Authorization;
 import com.example.cp.history.HistoryDB;
@@ -36,7 +38,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -49,10 +50,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -310,7 +308,7 @@ public class AdminMenuController {
     private TableColumn<ReportWOProperty, String> rep_mat_col;
     @FXML
     private Label rep_label;
-
+    ReportWO reportWO_xlsx = new ReportWO();
     @FXML
     private TableColumn<ReportWOProperty, Float> rep_price_col;
 
@@ -2249,6 +2247,8 @@ public class AdminMenuController {
         date_to.setVisible(true);
         date_from.setValue(null);
         date_to.setValue(null);
+        rep_perc_col.setVisible(false);
+        rep_tot_pr_col.setVisible(false);
         mat_report.setVisible(false);
         show_report.setVisible(true);
         show_diagram.setVisible(false);
@@ -2272,6 +2272,8 @@ public class AdminMenuController {
     @FXML
     void SuppliersChoiceButtonOnAction(ActionEvent event) throws IOException, InterruptedException {
         report_type=null;
+        rep_perc_col.setVisible(false);
+        rep_tot_pr_col.setVisible(false);
         rep_label.setText("");
         rep_abc_col.setVisible(false);
         rep_abc_qua_col.setVisible(false);
@@ -2311,6 +2313,7 @@ public class AdminMenuController {
     }
     @FXML
     void ShowReportButtonOnAction(ActionEvent event) throws IOException, InterruptedException {
+        reportWO_xlsx = null;
         if(report_type==1){
         if(date_to.getValue()==null||date_from.getValue()==null){
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -2335,6 +2338,7 @@ public class AdminMenuController {
                 HttpPost request = new HttpPost(BASE_REPORT+"/abc");
                 ObjectMapper objectMapper = new ObjectMapper();
                 String jsonRequestBody = objectMapper.writeValueAsString(reportWO);
+                reportWO_xlsx = reportWO;
                 StringEntity entity = new StringEntity(jsonRequestBody, StandardCharsets.UTF_8);
                 entity.setContentType("application/json; charset=UTF-8");
                 request.setEntity(entity);
@@ -2350,7 +2354,7 @@ public class AdminMenuController {
                     String formattedDateFrom = df.format(formatter);
                     LocalDate dt = date_to.getValue();
                     String formattedDateTo = dt.format(formatter);
-
+                    rep_table.getItems().clear();
                     rep_label.setText("ABC анализ расхода материалов за период с " +formattedDateFrom+
                             " по "+formattedDateTo);
                     rep_mat_col.setVisible(true);
@@ -2375,6 +2379,7 @@ public class AdminMenuController {
                         ReportWOProperty e = new ReportWOProperty(reportWO1);
                         tableReportProperties.add(e);
                     }
+
                     rep_table.setItems(tableReportProperties);
                     rep_table.setRowFactory(tv -> new TableRow<ReportWOProperty>() {
                         protected void updateItem(ReportWOProperty item, boolean empty) {
@@ -2427,6 +2432,7 @@ public class AdminMenuController {
                     HttpPost request = new HttpPost(BASE_REPORT+"/suppliers");
                     ObjectMapper objectMapper = new ObjectMapper();
                     String jsonRequestBody = objectMapper.writeValueAsString(reportWO);
+                    reportWO_xlsx = reportWO;
                     StringEntity entity = new StringEntity(jsonRequestBody, StandardCharsets.UTF_8);
                     entity.setContentType("application/json; charset=UTF-8");
                     request.setEntity(entity);
@@ -2438,6 +2444,7 @@ public class AdminMenuController {
                     if (report.size()==0){
                         rep_label.setText("Данные по указанному материалу отсутствуют.");
                     } else {
+                        rep_table.getItems().clear();
                         rep_label.setText("Анализ поставщиков материала " + mat_report.getValue());
                         rep_price_col.setVisible(true);
                         rep_rej_col.setVisible(true);
@@ -2461,6 +2468,7 @@ public class AdminMenuController {
                             ReportWOProperty e = new ReportWOProperty(reportWO1);
                             tableReportProperties.add(e);
                         }
+
                         rep_table.setItems(tableReportProperties);
                         show_diagram.setVisible(true);
                         load_button.setVisible(true);
@@ -2610,25 +2618,39 @@ public class AdminMenuController {
     }
     @FXML
     void LoadButtonOnAction(ActionEvent event) throws IOException {
-        BufferedWriter outputWriter = null;
         if(report_type==1){
-            outputWriter = new BufferedWriter(new FileWriter("consumption_report.txt"));
+            org.apache.http.client.HttpClient client = HttpClients.createDefault();
+            HttpPost request = new HttpPost(BASE_REPORT+"/abc_xlsx");
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonRequestBody = objectMapper.writeValueAsString(reportWO_xlsx);
+            StringEntity entity = new StringEntity(jsonRequestBody, StandardCharsets.UTF_8);
+            entity.setContentType("application/json; charset=UTF-8");
+            request.setEntity(entity);
+            org.apache.http.HttpResponse response = client.execute(request);
+
+            if (response.getStatusLine().getStatusCode() == 200) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText(null);
+            alert.setContentText("Файл 'ABC анализ расхода материалов' XLSX сохранён.");
+            alert.showAndWait();
+            }
         } else if (report_type==3) {
-           /* if (avg_check.isSelected())
-                outputWriter = new BufferedWriter(new FileWriter("avg_suppliers_report.txt"));
-          else  outputWriter = new BufferedWriter(new FileWriter("suppliers_report.txt"));*/
+            org.apache.http.client.HttpClient client = HttpClients.createDefault();
+            HttpPost request = new HttpPost(BASE_REPORT+"/suppliers_xlsx");
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonRequestBody = objectMapper.writeValueAsString(reportWO_xlsx);
+            StringEntity entity = new StringEntity(jsonRequestBody, StandardCharsets.UTF_8);
+            entity.setContentType("application/json; charset=UTF-8");
+            request.setEntity(entity);
+            org.apache.http.HttpResponse response = client.execute(request);
+
+            if (response.getStatusLine().getStatusCode() == 200) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText(null);
+                alert.setContentText("Файл 'Анализ поставщиков материала " + mat_report.getValue() + "' XLSX сохранён.");
+                alert.showAndWait();
+            }
         }
-        else if (report_type==2) {
-                outputWriter = new BufferedWriter(new FileWriter("quality_report.txt"));
-        }
-        assert outputWriter != null;
-        outputWriter.write(for_report);
-        outputWriter.flush();
-        outputWriter.close();
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText(null);
-        alert.setContentText("Файл сохранён.");
-        alert.showAndWait();
     }
     @FXML
     void AvgCheckPressedOnAction(ActionEvent event) {
@@ -2656,9 +2678,9 @@ public class AdminMenuController {
         }
     }
     @FXML
-    void AktButtonOnAction(ActionEvent event) {
+    void AktButtonOnAction(ActionEvent event) throws Exception {
         if (!table_po.getSelectionModel().isEmpty()){
-            XWPFDocument document = new XWPFDocument();
+          /*  XWPFDocument document = new XWPFDocument();
             XWPFParagraph paragraph = document.createParagraph();
             XWPFRun run = paragraph.createRun();
             run.setText("Привет, мир!");
@@ -2673,6 +2695,28 @@ public class AdminMenuController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            Document doc = new Document("template.docx");
+            MaterialsDB materialsDB = new MaterialsDB();
+            materialsDB.setNumber("SB666");
+            ReportingEngine engine = new ReportingEngine();
+            engine.buildReport(doc, materialsDB, "materialsDB");
+            doc.save("word.docx");*/
+
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_WRITE_OFF+"/print/"+table_po.getSelectionModel().getSelectedItem().getId()))
+                    .header("Content-Type", "application/json")
+                    .GET()
+                    .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
+                alert3.setTitle("ОК");
+                alert3.setHeaderText(null);
+                alert3.setContentText("Акт списания материалов в производство по заказу " + table_po.getSelectionModel().getSelectedItem().getId() + " загружен.");
+                alert3.showAndWait();
+            }
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
@@ -2680,4 +2724,5 @@ public class AdminMenuController {
             alert.showAndWait();
         }
     }
+
 }

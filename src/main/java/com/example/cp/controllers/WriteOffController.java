@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 
@@ -44,6 +46,13 @@ public class WriteOffController {
         System.out.println("Выполняется отмена списания материала...");
         WriteOff writeOff = new WriteOffImplemented();
         writeOff.backWriteOff(productionOrdersDB);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @GetMapping ("/print/{id}")
+    public ResponseEntity<String> print(@PathVariable Integer id) throws IOException, ParseException {
+        System.out.println("Формирование акта списания материалов в производство..." );
+        WriteOff writeOff = new WriteOffImplemented();
+        writeOff.print(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping ("/view/{id}")
