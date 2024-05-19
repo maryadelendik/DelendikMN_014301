@@ -2185,7 +2185,7 @@ public class AdminMenuController {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Уточнение");
         alert.setHeaderText(null);
-        alert.setContentText("Выровнять остатки на начало месяца?");
+        alert.setContentText("Указать остатки на начало месяца?");
         Optional<ButtonType> option = alert.showAndWait();
         if (option.get() == ButtonType.OK) {
         org.apache.http.client.HttpClient client = HttpClients.createDefault();
@@ -2199,7 +2199,7 @@ public class AdminMenuController {
             Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
             alert3.setTitle("ОК");
             alert3.setHeaderText(null);
-            alert3.setContentText("Остатки выровнены.");
+            alert3.setContentText("Остатки указаны.");
             alert3.showAndWait();
             check_search();
             check_search_supply_documents();
@@ -2356,7 +2356,7 @@ public class AdminMenuController {
                     String formattedDateTo = dt.format(formatter);
                     rep_table.getItems().clear();
                     rep_label.setText("ABC анализ расхода материалов за период с " +formattedDateFrom+
-                            " по "+formattedDateTo);
+                            " по " + formattedDateTo);
                     rep_mat_col.setVisible(true);
                     rep_abc_col.setVisible(true);
                     rep_abc_qua_col.setVisible(true);

@@ -400,6 +400,9 @@ public class WriteOffImplemented implements WriteOff {
             for (int i = 0; i<report.size();i++){
                 total_percent += report.get(i).getAvg_item_price();
                 report.get(i).setTotal_perc(String.format("%.2f", total_percent).replace(',', '.')+" %");
+                if(i == report.size() - 1){
+                    report.get(i).setTotal_perc("100 %");
+                }
                 if (total_percent<80) {
                     report.get(i).setAbc("A");
                 } else if (total_percent>=80 && total_percent<=95) {
