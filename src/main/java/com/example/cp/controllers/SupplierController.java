@@ -17,13 +17,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/supplier")
 public class SupplierController {
-    @GetMapping ("/delete/{id}")
+    @DeleteMapping ("/delete/{id}")
+    public ResponseEntity<SuppliersDB> deleteSupplier(@PathVariable Integer id) {
+        System.out.println("Выполняется удаление поставщика...");
+        Suppliers suppliers = new SuppliersImplemented();
+        suppliers.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    /*@GetMapping ("/delete/{id}")
     public ResponseEntity<SuppliersDB> deleteSupplier(@PathVariable Integer id) {
         System.out.println("Выполняется удаление поставщика...");
         Suppliers suppliers = new SuppliersImplemented();
         suppliers.deleteById(id);
      return new ResponseEntity<>(HttpStatus.OK);
-    }
+    }*/
     @GetMapping ("/view_all")
     public ResponseEntity<List<SuppliersDB>> viewAll() {
         System.out.println("Запрос к БД на получение информации о поставщиках...");

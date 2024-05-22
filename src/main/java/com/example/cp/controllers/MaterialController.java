@@ -19,13 +19,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/material")
 public class MaterialController {
-    @GetMapping ("/delete/{id}")
+    @DeleteMapping ("/delete/{id}")
+    public ResponseEntity<MaterialsDB> deleteMaterial(@PathVariable Integer id) {
+        System.out.println("Выполняется удаление материала...");
+        Materials materials = new MaterialsImplemented();
+        materials.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+   /* @GetMapping ("/delete/{id}")
     public ResponseEntity<MaterialsDB> deleteMaterial(@PathVariable Integer id) {
         System.out.println("Выполняется удаление материала...");
         Materials materials = new MaterialsImplemented();
         materials.deleteById(id);
      return new ResponseEntity<>(HttpStatus.OK);
-    }
+    }*/
     @GetMapping ("/check_if_exists/{number}")
     public ResponseEntity<Boolean> checkIfExists(@PathVariable String number) {
         System.out.println("Выполняется проверка наличия материала...");

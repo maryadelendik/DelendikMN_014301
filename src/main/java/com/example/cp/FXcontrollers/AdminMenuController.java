@@ -909,7 +909,7 @@ public class AdminMenuController {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(BASE_USER + "/check_if_exists/" + encodedParam))
                         .header("Content-Type", "application/json")
-                        .GET()
+                        .DELETE()
                         .build();
                 HttpResponse<String> response_check = httpCheck.send(request, HttpResponse.BodyHandlers.ofString());
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -1090,7 +1090,7 @@ public class AdminMenuController {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(BASE_SUPPLIER+"/delete/"+table_suppliers.getSelectionModel().getSelectedItem().getId()))
                         .header("Content-Type", "application/json")
-                        .GET()
+                        .DELETE()
                         .build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                     check_search_suppliers();
@@ -1228,7 +1228,8 @@ public class AdminMenuController {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(BASE_MATERIAL+"/delete/"+table_materials.getSelectionModel().getSelectedItem().getId()))
                         .header("Content-Type", "application/json")
-                        .GET()
+                       // .GET()
+                        .DELETE()
                         .build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 if(response.statusCode()==200){
@@ -1899,7 +1900,7 @@ public class AdminMenuController {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(BASE_PRODUCTION_ORDER+"/delete/"+table_po.getSelectionModel().getSelectedItem().getId()))
                         .header("Content-Type", "application/json")
-                        .GET()
+                        .DELETE()
                         .build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 if(response.statusCode()==200){
@@ -2680,6 +2681,13 @@ public class AdminMenuController {
     @FXML
     void AktButtonOnAction(ActionEvent event) throws Exception {
         if (!table_po.getSelectionModel().isEmpty()){
+            if (!table_po.getSelectionModel().getSelectedItem().isStatus()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Ошибка");
+                alert.setHeaderText(null);
+                alert.setContentText("Заказ находится в статусе 'открыто'.");
+                alert.showAndWait();
+            } else {
           /*  XWPFDocument document = new XWPFDocument();
             XWPFParagraph paragraph = document.createParagraph();
             XWPFRun run = paragraph.createRun();
@@ -2716,7 +2724,7 @@ public class AdminMenuController {
                 alert3.setHeaderText(null);
                 alert3.setContentText("Акт списания материалов в производство по заказу " + table_po.getSelectionModel().getSelectedItem().getId() + " загружен.");
                 alert3.showAndWait();
-            }
+            }}
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);

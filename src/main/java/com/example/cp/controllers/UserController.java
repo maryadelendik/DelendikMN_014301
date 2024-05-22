@@ -164,7 +164,7 @@ public class UserController {
         users.save(usersDB);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    @PostMapping("/delete/{login}")
+    @DeleteMapping("/delete/{login}")
     public ResponseEntity<Integer> deleteUser(@PathVariable String login) {
         System.out.println("Выполняется удаление пользователя...");
         Users users=new UsersImplemented();
@@ -172,5 +172,13 @@ public class UserController {
         return new ResponseEntity<>(0, HttpStatus.OK);
 
     }
+    /*@PostMapping("/delete/{login}")
+    public ResponseEntity<Integer> deleteUser(@PathVariable String login) {
+        System.out.println("Выполняется удаление пользователя...");
+        Users users=new UsersImplemented();
+        users.deleteByLogin(login);
+        return new ResponseEntity<>(0, HttpStatus.OK);
+
+    }*/
 }
 

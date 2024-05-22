@@ -22,13 +22,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/production_order")
 public class ProductionOrderController {
-    @GetMapping ("/delete/{id}")
+    @DeleteMapping ("/delete/{id}")
+    public ResponseEntity<ProductionOrdersDB> deleteProductionOrder(@PathVariable Integer id) {
+        System.out.println("Выполняется удаление заказа отдела производства...");
+        ProductionOrders productionOrders = new ProductionOrdersImplemented();
+        productionOrders.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+   /* @GetMapping ("/delete/{id}")
     public ResponseEntity<ProductionOrdersDB> deleteProductionOrder(@PathVariable Integer id) {
         System.out.println("Выполняется удаление заказа отдела производства...");
         ProductionOrders productionOrders = new ProductionOrdersImplemented();
         productionOrders.deleteById(id);
      return new ResponseEntity<>(HttpStatus.OK);
-    }
+    }*/
     @GetMapping ("/view_all")
     public ResponseEntity<List<ProductionOrdersDB>> viewAll() {
         System.out.println("Запрос к БД на получение информации о запросах отдела производства...");

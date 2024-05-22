@@ -20,13 +20,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/supply_document")
 public class SupplyDocumentController {
-    @GetMapping ("/delete/{id}")
+    @DeleteMapping ("/delete/{id}")
     public ResponseEntity<SupplyDocumentsDB> deleteSupplyDocument(@PathVariable Integer id) {
         System.out.println("Выполняется удаление документа поставки...");
         SupplyDocuments supplyDocuments = new SupplyDocumentsImplemented();
         supplyDocuments.deleteById(id);
-     return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+//    @GetMapping ("/delete/{id}")
+//    public ResponseEntity<SupplyDocumentsDB> deleteSupplyDocument(@PathVariable Integer id) {
+//        System.out.println("Выполняется удаление документа поставки...");
+//        SupplyDocuments supplyDocuments = new SupplyDocumentsImplemented();
+//        supplyDocuments.deleteById(id);
+//     return new ResponseEntity<>(HttpStatus.OK);
+//    }
     @GetMapping ("/view_all")
     public ResponseEntity<List<SupplyDocumentsDB>> viewAll() {
         System.out.println("Запрос к БД на получение информации о документах поставки...");
